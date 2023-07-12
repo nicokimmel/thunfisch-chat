@@ -8,6 +8,7 @@ function restoreSettings() {
     if (localStorage.getItem("chatSettings")) {
         chatSettings = JSON.parse(localStorage.getItem("chatSettings"))
     }
+    document.documentElement.setAttribute("data-bs-theme", chatSettings["theme"])
     document.getElementById("promt-model").innerText = chatSettings["model"]
 }
 
