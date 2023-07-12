@@ -20,7 +20,7 @@ function sendPrompt() {
     document.getElementById("message-list").appendChild(userMessage)
 
     let responseMessage = document.createElement("div")
-    responseMessage.classList.add("message-box", "row", "mb-3", "ms-3", "border", "rounded", "bg-body-secondary")
+    responseMessage.classList.add("message-box", "row", "mb-3", "ms-3", "border", "border-info", "rounded", "bg-body-secondary")
     responseMessage.innerHTML = `
         <div class="message-image col-1 fs-3 text-center align-self-center">
             <i class="bi bi-cpu-fill"></i>
