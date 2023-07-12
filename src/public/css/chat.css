@@ -1,0 +1,13 @@
+html, body, #chat-main {
+    height: 100%;
+}
+
+pre {
+    background-color: rgba(var(--bs-tertiary-bg-rgb), var(--bs-bg-opacity)) !important;
+    border-radius: var(--bs-border-radius) !important;
+    padding: 5px;
+}
+
+md-block p {
+    margin: 0;
+}
