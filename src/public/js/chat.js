@@ -51,26 +51,25 @@ function sendPrompt() {
 
 function resizePromtTextarea() {
     let textarea = document.getElementById("promt-text")
-    textarea.style.overflow = 'hidden'
+    textarea.style.overflow = "hidden"
     textarea.style.height = 0
     if (textarea.scrollHeight < 200) {
-        textarea.style.height = textarea.scrollHeight + 'px'
+        textarea.style.height = textarea.scrollHeight + "px"
     } else {
         textarea.style.height = "200px"
     }
 }
 
 document.getElementById("promt-model-gpt4").addEventListener("click", () => {
-    document.getElementById("promt-model").innerText = "GPT-4"
-    setModel("gpt4")
+    setModel("GPT-4")
 })
+
 document.getElementById("promt-model-gpt3").addEventListener("click", () => {
-    document.getElementById("promt-model").innerText = "GPT-3-Turbo"
-    setModel("gpt3")
+    setModel("GPT-3-Turbo")
 })
+
 document.getElementById("promt-model-dalle").addEventListener("click", () => {
-    document.getElementById("promt-model").innerText = "DALL-E"
-    setModel("dalle")
+    setModel("DALL-E")
 })
 
 document.getElementById("promt-send").addEventListener("click", () => {
@@ -84,6 +83,7 @@ document.getElementById("promt-text").addEventListener("keypress", function (eve
         return
     }
 })
+
 document.getElementById("promt-text").addEventListener("keyup", function (event) {
     resizePromtTextarea()
 })

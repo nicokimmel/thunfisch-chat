@@ -25,15 +25,15 @@ app.post("/api", (req, res) => {
 	console.log(promt)
 	
 	switch (model) {
-		case "gpt4":
+		case "GPT-4":
 			res.status(200)
 			res.send("Hallo, schön dass du da bist!")
 			break
-		case "gpt3":
+		case "GPT-3-Turbo":
 			res.status(200)
 			res.send("Hallo, wie geht es dir?")
 			break
-		case "falle":
+		case "DALL-E":
 			res.status(200)
 			res.send("Hallo, schön dich zu sehen.")
 			break

@@ -1,11 +1,14 @@
 var defaultChatSettings = {
     "theme": "dark",
-    "model": "gpt4"
+    "model": "GPT-4"
 }
-
 var chatSettings = defaultChatSettings
-if(localStorage.getItem("chatSettings")) {
-    var chatSettings = JSON.parse(localStorage.getItem("chatSettings"))
+
+function restoreSettings() {
+    if (localStorage.getItem("chatSettings")) {
+        chatSettings = JSON.parse(localStorage.getItem("chatSettings"))
+    }
+    document.getElementById("promt-model").innerText = chatSettings["model"]
 }
 
 function setTheme(theme) {
@@ -16,4 +19,7 @@ function setTheme(theme) {
 function setModel(model) {
     chatSettings["model"] = model
     localStorage.setItem("chatSettings", JSON.stringify(chatSettings))
+    document.getElementById("promt-model").innerText = model
 }
+
+restoreSettings()
