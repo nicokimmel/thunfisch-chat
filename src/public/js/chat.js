@@ -18,9 +18,10 @@ function sendPrompt() {
             ${prompt.replace(/\n/g, "<br>")}
         </div>`
     document.getElementById("message-list").appendChild(userMessage)
+    scrollMessageList()
 
     let responseMessage = document.createElement("div")
-    responseMessage.classList.add("message-box", "row", "mb-3", "ms-3", "border", "border-info", "rounded", "bg-body-secondary")
+    responseMessage.classList.add("message-box", "row", "mb-3", "ms-3", "border", "rounded", "bg-body-secondary")
     responseMessage.innerHTML = `
         <div class="message-image col-1 fs-3 text-center align-self-center">
             <i class="bi bi-cpu-fill"></i>
@@ -37,6 +38,7 @@ function sendPrompt() {
             </div>
         </md-block>`
     document.getElementById("message-list").appendChild(responseMessage)
+    scrollMessageList()
 
     callAPI(model, prompt, (response) => {
         responseMessage.innerHTML = `
@@ -46,6 +48,7 @@ function sendPrompt() {
             <md-block class="message-text col-11 p-3 border-start text-wrap" markdown="1">
                 ${response}
             </md-block>`
+        scrollMessageList()
     })
 }
 
@@ -59,6 +62,15 @@ function resizePromtTextarea() {
         textarea.style.height = "200px"
     }
 }
+
+function scrollMessageList() {
+    let messageList = document.getElementById("message-list")
+    messageList.scrollTo(0, messageList.scrollHeight)
+}
+
+document.getElementById("chat-theme").addEventListener("click", () => {
+    toggleTheme()
+})
 
 document.getElementById("promt-model-gpt4").addEventListener("click", () => {
     setModel("GPT-4")

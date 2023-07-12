@@ -1,5 +1,15 @@
-html, body, #chat-main {
+html,
+body,
+#chat-main {
     height: 100%;
+}
+
+textarea:focus,
+textarea:active {
+    outline:0px !important;
+    box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    -webkit-box-shadow: none !important;
 }
 
 pre {
