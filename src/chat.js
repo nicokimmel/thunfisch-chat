@@ -8,11 +8,8 @@ const http = require("http").Server(app)
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")))
 
-const { Configuration, OpenAIApi } = require("openai")
-const configuration = new Configuration({
-	apiKey: process.env.OPENAI_API_KEY,
-})
-const openai = new OpenAIApi(configuration)
+const { OpenAIWrapper } = require("./openai")
+const openai = new OpenAIWrapper()
 
 app.get("/", (req, res) => {
 	res.sendFile(path.join(__dirname, "public", "index.html"))
@@ -22,20 +19,24 @@ app.post("/api", (req, res) => {
 	let model = req.body.model
 	let promt = req.body.promt
 
-	console.log(promt)
-	
 	switch (model) {
 		case "GPT-4":
-			res.status(200)
-			res.send("Hallo, schön dass du da bist!")
+			openai.gpt4(promt, (message, reason) => {
+				res.status(200)
+				res.send(message["content"])
+			})
 			break
 		case "GPT-3-Turbo":
-			res.status(200)
-			res.send("Hallo, wie geht es dir?")
+			openai.gpt3(promt, (message, reason) => {
+				res.status(200)
+				res.send(message["content"])
+			})
 			break
 		case "DALL-E":
-			res.status(200)
-			res.send("Hallo, schön dich zu sehen.")
+			openai.dalle(promt, (url) => {
+				res.status(200)
+				res.send(`<img src="${url}">`)
+			})
 			break
 		default:
 			res.status(400)
