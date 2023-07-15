@@ -1,7 +1,6 @@
-html,
-body,
-#chat-main {
-    height: 100%;
+html, body {
+    height: 100vh;
+    max-height: 100vh;
 }
 
 textarea:focus,
@@ -20,4 +19,22 @@ pre {
 
 md-block p {
     margin: 0;
+}
+
+#chat-left {
+    width: 300px;
+}
+
+#header {
+    height: 66px;
+}
+
+#chat {
+    height: calc(100vh - 66px);
+}
+
+.card button {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }

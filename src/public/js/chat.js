@@ -1,7 +1,9 @@
 function sendPrompt() {
     let model = chatSettings["model"]
-    let prompt = document.getElementById("promt-text").value
-    document.getElementById("promt-text").value = ""
+    let prompt = document.getElementById("chat-input").value
+    let tab = chatSettings.tab
+    
+    document.getElementById("chat-input").value = ""
     resizePromtTextarea()
 
     if (prompt == "") {
@@ -9,24 +11,26 @@ function sendPrompt() {
     }
 
     let userMessage = document.createElement("div")
-    userMessage.classList.add("message-box", "row", "mb-3", "me-3", "border", "rounded", "bg-body-secondary")
+    userMessage.classList.add("message", "d-flex", "flex-row", "p-3")
     userMessage.innerHTML = `
-        <div class="message-image col-1 fs-3 text-center align-self-center">
+        <div class="message-left p-2 fs-3">
             <i class="bi bi-person-fill"></i>
         </div>
-        <div class="message-text col-11 p-3 border-start text-wrap">
+        <md-block class="message-right p-2" markdown="1">
             ${prompt.replace(/\n/g, "<br>")}
-        </div>`
+        </md-block>`
     document.getElementById("message-list").appendChild(userMessage)
     scrollMessageList()
+    
+    chatHistory[tab].push({role: "user", content: prompt})
 
     let responseMessage = document.createElement("div")
-    responseMessage.classList.add("message-box", "row", "mb-3", "ms-3", "border", "rounded", "bg-body-secondary")
+    responseMessage.classList.add("message", "d-flex", "flex-row", "bg-dark-subtle", "p-3", "rounded")
     responseMessage.innerHTML = `
-        <div class="message-image col-1 fs-3 text-center align-self-center">
+        <div class="message-left p-2 fs-3">
             <i class="bi bi-cpu-fill"></i>
         </div>
-        <md-block class="message-text col-11 p-3 border-start" markdown="1">
+        <md-block class="message-right p-2" markdown="1">
             <div class="spinner-grow spinner-grow-sm" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
@@ -39,21 +43,25 @@ function sendPrompt() {
         </md-block>`
     document.getElementById("message-list").appendChild(responseMessage)
     scrollMessageList()
-
-    callAPI(model, prompt, (response) => {
+    
+    let messages = getHistory()    
+    callAPI(model, messages, (response) => {
         responseMessage.innerHTML = `
-            <div class="message-image col-1 fs-3 text-center align-self-center">
+            <div class="message-left p-2 fs-3">
                 <i class="bi bi-cpu-fill"></i>
             </div>
-            <md-block class="message-text col-11 p-3 border-start text-wrap" markdown="1">
+            <md-block class="message-right p-2" markdown="1">
                 ${response}
             </md-block>`
         scrollMessageList()
+        
+        chatHistory[tab].push({role: "assistant", content: response})
+        saveChatHistory()
     })
 }
 
 function resizePromtTextarea() {
-    let textarea = document.getElementById("promt-text")
+    let textarea = document.getElementById("chat-input")
     textarea.style.overflow = "hidden"
     textarea.style.height = 0
     if (textarea.scrollHeight < 200) {
@@ -72,23 +80,23 @@ document.getElementById("chat-theme").addEventListener("click", () => {
     toggleTheme()
 })
 
-document.getElementById("promt-model-gpt4").addEventListener("click", () => {
-    setModel("GPT-4")
+document.getElementById("chat-model-gpt3").addEventListener("click", () => {
+    setModel("gpt3")
 })
 
-document.getElementById("promt-model-gpt3").addEventListener("click", () => {
-    setModel("GPT-3-Turbo")
+document.getElementById("chat-model-gpt4").addEventListener("click", () => {
+    setModel("gpt4")
 })
 
-document.getElementById("promt-model-dalle").addEventListener("click", () => {
-    setModel("DALL-E")
+document.getElementById("chat-model-dalle").addEventListener("click", () => {
+    setModel("dalle")
 })
 
-document.getElementById("promt-send").addEventListener("click", () => {
+document.getElementById("chat-submit").addEventListener("click", () => {
     sendPrompt()
 })
 
-document.getElementById("promt-text").addEventListener("keypress", function (event) {
+document.getElementById("chat-input").addEventListener("keypress", function (event) {
     if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault()
         sendPrompt()
@@ -96,8 +104,16 @@ document.getElementById("promt-text").addEventListener("keypress", function (eve
     }
 })
 
-document.getElementById("promt-text").addEventListener("keyup", function (event) {
+document.getElementById("chat-input").addEventListener("keyup", function (event) {
     resizePromtTextarea()
+})
+
+document.getElementById("chat-menu").addEventListener("click", function (event) {
+    toggleMenu()
+})
+
+document.getElementById("tab-new").addEventListener("click", function (event) {
+    newTab()
 })
 
 resizePromtTextarea()

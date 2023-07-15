@@ -17,25 +17,25 @@ app.get("/", (req, res) => {
 
 app.post("/api", (req, res) => {
 	let model = req.body.model
-	let promt = req.body.promt
-
+	let messages = req.body.messages
+	console.log(messages)
 	switch (model) {
-		case "GPT-4":
-			openai.gpt4(promt, (message, reason) => {
+		case "gpt3":
+			openai.gpt("gpt-3.5-turbo", messages, (response, reason) => {
 				res.status(200)
-				res.send(message["content"])
+				res.send(response)
 			})
 			break
-		case "GPT-3-Turbo":
-			openai.gpt3(promt, (message, reason) => {
+		case "gpt4":
+			//openai.gpt("gpt-4", promt, (response, reason) => {
 				res.status(200)
-				res.send(message["content"])
-			})
+				res.send("Coming soon.")
+			//})
 			break
-		case "DALL-E":
-			openai.dalle(promt, (url) => {
+		case "dalle":
+			openai.dalle(messages, (response) => {
 				res.status(200)
-				res.send(`<img src="${url}">`)
+				res.send(response)
 			})
 			break
 		default:

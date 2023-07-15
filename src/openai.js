@@ -10,29 +10,20 @@ class OpenAIWrapper {
         this.openai = new OpenAIApi(configuration)
     }
 
-    async gpt3(prompt, callback) {
+    async gpt(version, messages, callback) {
         const response = await this.openai.createChatCompletion({
-            model: "gpt-3.5-turbo",
-            messages: [{ role: "user", content: prompt }]
+            model: version,
+            messages: messages
         })
         let reason = response.data.choices[0].finish_reason
-        let message = response.data.choices[0].message
+        let message = response.data.choices[0].message.content
         callback(message, reason)
     }
 
-    async gpt4(prompt, callback) {
-        const response = await this.openai.createChatCompletion({
-            model: "gpt-4.0",
-            messages: [{ role: "user", content: prompt }]
-        })
-        let reason = response.data.choices[0].finish_reason
-        let message = response.data.choices[0].message
-        callback(message, reason)
-    }
-
-    async dalle(prompt, callback) {
+    async dalle(messages, callback) {
+        let prompt = messages[messages.length - 1]
         const response = await this.openai.createImage({
-            prompt,
+            prompt: prompt.content,
             n: 1,
             size: "256x256"
         })
