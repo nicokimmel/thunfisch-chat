@@ -2,7 +2,7 @@ function sendPrompt() {
     let model = chatSettings["model"]
     let prompt = document.getElementById("chat-input").value
     let tab = chatSettings.tab
-    
+
     document.getElementById("chat-input").value = ""
     resizePromtTextarea()
 
@@ -21,8 +21,8 @@ function sendPrompt() {
         </md-block>`
     document.getElementById("message-list").appendChild(userMessage)
     scrollMessageList()
-    
-    chatHistory[tab].push({role: "user", content: prompt})
+
+    chatHistory[tab].push({ role: "user", content: prompt })
 
     let responseMessage = document.createElement("div")
     responseMessage.classList.add("message", "d-flex", "flex-row", "bg-dark-subtle", "p-3", "rounded")
@@ -43,8 +43,8 @@ function sendPrompt() {
         </md-block>`
     document.getElementById("message-list").appendChild(responseMessage)
     scrollMessageList()
-    
-    let messages = getHistory()    
+
+    let messages = getHistory()
     callAPI(model, messages, (response) => {
         responseMessage.innerHTML = `
             <div class="message-left p-2 fs-3">
@@ -54,8 +54,8 @@ function sendPrompt() {
                 ${response}
             </md-block>`
         scrollMessageList()
-        
-        chatHistory[tab].push({role: "assistant", content: response})
+
+        chatHistory[tab].push({ role: "assistant", content: response })
         saveChatHistory()
     })
 }
@@ -124,3 +124,31 @@ resizePromtTextarea()
 
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+function modifyPreTags() {
+    var preTags = document.querySelectorAll("pre")
+    preTags.forEach((preTag) => {
+        preTag.classList.add("position-relative", "p-3", "pt-5", "my-3")
+
+        let button = document.createElement("button")
+        button.innerHTML = `<i class="bi bi-clipboard"></i>`
+        button.classList.add("btn", "btn-sm", "btn-secondary", "position-absolute", "top-0", "end-0", "m-1", "copy-button")
+        button.style.setProperty("--bs-btn-padding-y", ".25rem")
+        button.style.setProperty("--bs-btn-padding-x", ".5rem")
+        button.style.setProperty("--bs-btn-font-size", ".75rem")
+        //preTag.appendChild(button)
+        //preTag.insertBefore(button, preTag.firstChild)
+
+        let laguage = preTag.className.match(/language-(\w+)/)?.[1] || "markdown"
+        console.log(laguage)
+
+        let topBar = document.createElement("div")
+        topBar.classList.add("position-absolute", "top-0", "start-0", "end-0", "bg-dark", "rounded-start", "p-2")
+        topBar.innerHTML = laguage.toUpperCase()
+
+        topBar.appendChild(button)
+
+
+        preTag.insertBefore(topBar, preTag.firstChild)
+    })
+}

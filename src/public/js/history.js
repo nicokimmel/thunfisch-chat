@@ -70,7 +70,6 @@ function loadChatHistory(index) {
                     ${message.content.replace(/\n/g, "<br>")}
                 </md-block>`
             messageList.appendChild(userMessage)
-            scrollMessageList()
 
         } else if (message.role === "assistant") {
 
@@ -84,13 +83,17 @@ function loadChatHistory(index) {
                 ${message.content}
             </md-block>`
             messageList.appendChild(assistantMessage)
-            scrollMessageList()
         }
     })
 
     chatSettings.tab = index
     saveSettings()
     restoreTabList()
+    
+    setTimeout(() => {
+        modifyPreTags()
+        scrollMessageList()
+    }, 500)
 }
 
 function newTab() {
