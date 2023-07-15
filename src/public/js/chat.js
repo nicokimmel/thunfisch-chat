@@ -116,4 +116,11 @@ document.getElementById("tab-new").addEventListener("click", function (event) {
     newTab()
 })
 
+document.getElementById("chat-context").addEventListener("change", function (event) {
+    setContext(this.checked, chatSettings.context.size)
+})
+
 resizePromtTextarea()
+
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))

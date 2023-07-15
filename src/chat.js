@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
 app.post("/api", (req, res) => {
 	let model = req.body.model
 	let messages = req.body.messages
-	console.log(messages)
+
 	switch (model) {
 		case "gpt3":
 			openai.gpt("gpt-3.5-turbo", messages, (response, reason) => {

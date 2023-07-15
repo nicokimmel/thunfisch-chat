@@ -13,8 +13,9 @@ function restoreSettings() {
     if (localStorage.getItem("chatSettings")) {
         chatSettings = JSON.parse(localStorage.getItem("chatSettings"))
     }
-    setTheme(chatSettings["theme"])
-    setModel(chatSettings["model"])
+    setTheme(chatSettings.theme)
+    setModel(chatSettings.model)
+    setContext(chatSettings.context.enabled, chatSettings.context.size)
 }
 
 function saveSettings() {
@@ -31,9 +32,10 @@ function toggleMenu() {
 }
 
 function setTheme(theme) {
-    chatSettings["theme"] = theme
+    chatSettings.theme = theme
     saveSettings()
-    document.documentElement.setAttribute("data-bs-theme", chatSettings["theme"])
+    
+    document.documentElement.setAttribute("data-bs-theme", chatSettings.theme)
     if (theme === "dark") {
         document.getElementById("chat-theme").innerHTML = `<i class="bi bi-sun-fill"></i>`
     } else {
@@ -42,7 +44,7 @@ function setTheme(theme) {
 }
 
 function toggleTheme() {
-    if (chatSettings["theme"] === "dark") {
+    if (chatSettings.theme === "dark") {
         setTheme("light")
     } else {
         setTheme("dark")
@@ -50,7 +52,7 @@ function toggleTheme() {
 }
 
 function setModel(model) {
-    chatSettings["model"] = model
+    chatSettings.model = model
     saveSettings()
 
     let modelSelection = document.getElementsByName("modelselection");
@@ -63,6 +65,14 @@ function setModel(model) {
             modelSelection[i].checked = false;
         }
     }
+}
+
+function setContext(enabled, size) {
+    chatSettings.context.enabled = enabled
+    chatSettings.context.size = size
+    saveSettings()
+    
+    document.getElementById("chat-context").checked = enabled
 }
 
 restoreSettings()
