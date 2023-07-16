@@ -11,10 +11,19 @@ textarea:active {
     -webkit-box-shadow: none !important;
 }
 
-pre {
-    background-color: rgba(var(--bs-tertiary-bg-rgb), var(--bs-bg-opacity)) !important;
+.message-user pre {
+    background-color: var(--bs-dark-bg-subtle) !important;
     border-radius: var(--bs-border-radius) !important;
+}
+
+.message-assistant pre {
+    background-color: var(--bs-tertiary-bg) !important;
+    border-radius: var(--bs-border-radius) !important;
+}
+
+pre code {
     padding: 5px;
+    overflow: scroll;
 }
 
 md-block p {
@@ -37,4 +46,12 @@ md-block p {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+}
+
+#file-list .input-group {
+    width: auto;
+}
+
+p {
+    margin-bottom: 10px !important;
 }

@@ -32,7 +32,7 @@ function restoreTabList() {
 
         let historyItem = document.createElement("button")
         historyItem.classList.add("list-group-item", "list-group-item-action")
-        historyItem.innerText = chat[0].content
+        historyItem.innerHTML = chat[0].content
         historyItem.setAttribute("onclick", "loadChatHistory(" + index + ")")
         historyList.appendChild(historyItem)
 
@@ -61,20 +61,20 @@ function loadChatHistory(index) {
         if (message.role === "user") {
 
             let userMessage = document.createElement("div")
-            userMessage.classList.add("message", "d-flex", "flex-row", "p-3")
+            userMessage.classList.add("message-user", "d-flex", "flex-row", "p-3")
             userMessage.innerHTML = `
                 <div class="message-left p-2 fs-3">
                     <i class="bi bi-person-fill"></i>
                 </div>
                 <md-block class="message-right p-2" markdown="1">
-                    ${message.content.replace(/\n/g, "<br>")}
+                    ${message.content}
                 </md-block>`
             messageList.appendChild(userMessage)
 
         } else if (message.role === "assistant") {
 
             let assistantMessage = document.createElement("div")
-            assistantMessage.classList.add("message", "d-flex", "flex-row", "bg-dark-subtle", "p-3", "rounded")
+            assistantMessage.classList.add("message-assistant", "d-flex", "flex-row", "bg-dark-subtle", "p-3", "rounded")
             assistantMessage.innerHTML = `
             <div class="message-left p-2 fs-3">
                 <i class="bi bi-cpu-fill"></i>
@@ -91,7 +91,7 @@ function loadChatHistory(index) {
     restoreTabList()
     
     setTimeout(() => {
-        modifyPreTags()
+        modifyCodeBlocks()
         scrollMessageList()
     }, 500)
 }

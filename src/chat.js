@@ -5,11 +5,14 @@ const path = require("path")
 const app = express()
 const http = require("http").Server(app)
 
-app.use(express.json());
+app.use(express.json())
 app.use(express.static(path.join(__dirname, "public")))
 
 const { OpenAIWrapper } = require("./openai")
 const openai = new OpenAIWrapper()
+
+const { UploadWrapper } = require("./upload")
+const upload = new UploadWrapper()
 
 app.get("/", (req, res) => {
 	res.sendFile(path.join(__dirname, "public", "index.html"))
@@ -28,8 +31,8 @@ app.post("/api", (req, res) => {
 			break
 		case "gpt4":
 			//openai.gpt("gpt-4", promt, (response, reason) => {
-				res.status(200)
-				res.send("Coming soon.")
+			res.status(200)
+			res.send("Coming soon.")
 			//})
 			break
 		case "dalle":
@@ -43,6 +46,18 @@ app.post("/api", (req, res) => {
 			res.send("Bad model request")
 			break
 	}
+})
+
+app.post("/upload", upload.singleFile(), function (req, res, next) {
+	if (!req.file) {
+		return res.status(400).json({ error: "Keine Datei hochgeladen!" })
+	}
+
+	upload.extractText(req.file.path, (text) => {
+		res.status(200)
+		res.send(text)
+		upload.removeFile(req.file.path)
+	})
 })
 
 http.listen(process.env.PORT, () => {
