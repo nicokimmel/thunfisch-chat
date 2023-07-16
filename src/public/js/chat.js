@@ -95,7 +95,7 @@ function modifyCodeBlocks() {
         let codeBar = document.createElement("div")
         codeBar.classList.add("d-flex", "flex-row", "justify-content-between", "align-items-center", "bg-dark", "p-1")
 
-        let languageText = preTag.className.match(/language-(\w+)/)?.[1] || "markdown"
+        let languageText = preTag.className.match(/language-(\w+)/)?.[1] || "text"
         let codeLanguage = document.createElement("span")
         codeLanguage.innerHTML = languageText.toUpperCase()
 
