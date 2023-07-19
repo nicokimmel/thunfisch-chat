@@ -14,6 +14,9 @@ const openai = new OpenAIWrapper()
 const { UploadWrapper } = require("./upload")
 const upload = new UploadWrapper()
 
+const { SearchWrapper } = require("./search")
+const search = new SearchWrapper()
+
 app.get("/", (req, res) => {
 	res.sendFile(path.join(__dirname, "public", "index.html"))
 })
@@ -62,4 +65,8 @@ app.post("/upload", upload.singleFile(), function (req, res, next) {
 
 http.listen(process.env.PORT, () => {
 	console.log(`Server läuft auf http://localhost:${process.env.PORT}`)
+
+	search.google("Kaffee", () => {
+
+	})
 })
