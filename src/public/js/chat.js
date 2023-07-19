@@ -3,12 +3,11 @@ function sendPrompt() {
     let prompt = document.getElementById("chat-input").value
     let tab = chatSettings.tab
     
-    if(attachedFiles.length > 0) {
-        prompt += "\n\nAnhang:"
-        attachedFiles.forEach(file => {
-            prompt += `\n\n${file.filename}:\n`
-            prompt += `\`\`\`\n${file.content}\`\`\``
-        })
+    if(Object.keys(attachedFiles).length > 0) {
+        for(let filename in attachedFiles) {
+            prompt += `\n\n${filename}:\n`
+            prompt += `\`\`\`\n${attachedFiles[filename]}\`\`\``
+        }
         clearAttachedFiles()
     }
     
@@ -34,6 +33,7 @@ function sendPrompt() {
     scrollMessageList()
 
     chatHistory[tab].push({ role: "user", content: prompt })
+    restoreTabList()
 
     let responseMessage = document.createElement("div")
     responseMessage.classList.add("message", "d-flex", "flex-row", "bg-dark-subtle", "p-3", "rounded")

@@ -1,13 +1,5 @@
 var chatHistory = [[]]
 
-function hasOnlyOneEmptyTab() {
-    return chatHistory.length === 1 && chatHistory[0].length === 0
-}
-
-function isTabEmpty(index) {
-    return chatHistory[index].length === 0
-}
-
 function restoreChatHistory() {
     if (localStorage.getItem("chatHistory")) {
         chatHistory = JSON.parse(localStorage.getItem("chatHistory"))
@@ -17,22 +9,13 @@ function restoreChatHistory() {
 }
 
 function restoreTabList() {
-    if (hasOnlyOneEmptyTab()) {
-        return
-    }
-
     let historyList = document.getElementById("tab-list")
     historyList.innerHTML = ""
 
     chatHistory.forEach((chat, index) => {
-
-        if (isTabEmpty(index)) {
-            return
-        }
-
         let historyItem = document.createElement("button")
         historyItem.classList.add("list-group-item", "list-group-item-action")
-        historyItem.innerHTML = chat[0].content
+        historyItem.innerHTML = chat[0]?.content || "Unbenannt"
         historyItem.setAttribute("onclick", "loadChatHistory(" + index + ")")
         historyList.appendChild(historyItem)
 
@@ -44,7 +27,6 @@ function restoreTabList() {
 
 function saveChatHistory() {
     localStorage.setItem("chatHistory", JSON.stringify(chatHistory))
-    restoreTabList()
 }
 
 function loadChatHistory(index) {
@@ -97,19 +79,15 @@ function loadChatHistory(index) {
 }
 
 function newTab() {
-    if (hasOnlyOneEmptyTab()) {
-        return
-    }
 
-    let index = chatHistory.length - 1
+    let index = chatHistory.length
 
-    if (!isTabEmpty(index)) {
-        chatHistory.push([])
-        index++
-    }
+    chatHistory.push([])
 
     chatSettings.tab = index
     saveSettings()
+    saveChatHistory()
+    
     loadChatHistory(index)
 }
 
@@ -123,3 +101,4 @@ function getHistory() {
 
 restoreChatHistory()
 loadChatHistory(chatSettings.tab)
+restoreTabList()
