@@ -11,6 +11,15 @@ function sendPrompt() {
         clearAttachedFiles()
     }
     
+    if(chatSettings.model === "google") {
+        search(prompt, (result) => {
+            setModel("gpt3")
+            document.getElementById("chat-input").value += "\n\nGoogle Suchergebnisse in JSON formatiert:\n\`\`\`JSON\n" + result + "\n\`\`\`\nBitte fasse die Suchergebnisse auf Deutsch zusammen."
+            sendPrompt()
+        })
+        return
+    }
+    
     console.log(prompt)
     
     document.getElementById("chat-input").value = ""
@@ -56,7 +65,7 @@ function sendPrompt() {
     scrollMessageList()
 
     let messages = getHistory()
-    callAPI(model, messages, (response) => {
+    promt(model, messages, (response) => {
         responseMessage.innerHTML = `
             <div class="message-left p-2 fs-3">
                 <i class="bi bi-cpu-fill"></i>
@@ -128,6 +137,10 @@ document.getElementById("chat-model-gpt4").addEventListener("click", () => {
 
 document.getElementById("chat-model-dalle").addEventListener("click", () => {
     setModel("dalle")
+})
+
+document.getElementById("chat-model-google").addEventListener("click", () => {
+    setModel("google")
 })
 
 document.getElementById("chat-submit").addEventListener("click", () => {

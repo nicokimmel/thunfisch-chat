@@ -63,10 +63,14 @@ app.post("/upload", upload.singleFile(), function (req, res, next) {
 	})
 })
 
+app.post("/search", (req, res) => {
+	let query = req.body.query
+	search.google(query, (result) => {
+		res.status(200)
+		res.send(JSON.stringify(result))
+	})
+})
+
 http.listen(process.env.PORT, () => {
 	console.log(`Server läuft auf http://localhost:${process.env.PORT}`)
-
-	search.google("Kaffee", () => {
-
-	})
 })

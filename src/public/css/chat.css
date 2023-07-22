@@ -1,11 +1,12 @@
-html, body {
+html,
+body {
     height: 100vh;
     max-height: 100vh;
 }
 
 textarea:focus,
 textarea:active {
-    outline:0px !important;
+    outline: 0px !important;
     box-shadow: none !important;
     -moz-box-shadow: none !important;
     -webkit-box-shadow: none !important;
@@ -26,20 +27,25 @@ pre code {
     overflow: scroll;
 }
 
-md-block p {
-    margin: 0;
+pre {
+    max-width: calc(80vw - 400px);
 }
 
-#chat-left {
-    width: 300px;
+md-block p {
+    margin: 0;
 }
 
 #header {
     height: 66px;
 }
 
+
 #chat {
     height: calc(100vh - 66px);
+}
+
+#chat-left {
+    width: 300px;
 }
 
 .card button {
