@@ -1,4 +1,4 @@
-function prompt(model, messages, callback) {
+function apiPrompt(model, messages, callback) {
     let api = new XMLHttpRequest()
     api.open("POST", "/api", true);
     api.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
@@ -12,7 +12,7 @@ function prompt(model, messages, callback) {
     }
 }
 
-function search(query, callback) {
+function apiSearch(query, callback) {
     let api = new XMLHttpRequest()
     api.open("POST", "/search", true);
     api.setRequestHeader("Content-Type", "application/json;charset=UTF-8")

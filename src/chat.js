@@ -33,7 +33,7 @@ app.post("/api", (req, res) => {
 			})
 			break
 		case "gpt4":
-			//openai.gpt("gpt-4", promt, (response, reason) => {
+			//openai.gpt("gpt-4", prompt, (response, reason) => {
 			res.status(200)
 			res.send("Coming soon.")
 			//})

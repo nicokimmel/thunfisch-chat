@@ -28,7 +28,7 @@ pre code {
 }
 
 pre {
-    max-width: calc(80vw - 400px);
+    max-width: 60vw;
 }
 
 md-block p {
@@ -48,10 +48,18 @@ md-block p {
     width: 300px;
 }
 
-.card button {
+.list-group-item {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    cursor: pointer; 
+}
+
+.list-group-item-delete {
+    padding: 0;
+    width: 42px;
+    text-align: center;
+    line-height: 42px;
 }
 
 #file-list .input-group {

@@ -2,50 +2,51 @@ function sendPrompt() {
     let model = chatSettings["model"]
     let prompt = document.getElementById("chat-input").value
     let tab = chatSettings.tab
-    
-    if(Object.keys(attachedFiles).length > 0) {
-        for(let filename in attachedFiles) {
+
+    if (Object.keys(attachedFiles).length > 0) {
+        for (let filename in attachedFiles) {
             prompt += `\n\n${filename}:\n`
             prompt += `\`\`\`\n${attachedFiles[filename]}\`\`\``
         }
         clearAttachedFiles()
     }
-    
-    if(chatSettings.model === "google") {
-        search(prompt, (result) => {
+
+    if (chatSettings.model === "google") {
+        apiSearch(prompt, (result) => {
             setModel("gpt3")
             document.getElementById("chat-input").value += "\n\nGoogle Suchergebnisse in JSON formatiert:\n\`\`\`JSON\n" + result + "\n\`\`\`\nBitte fasse die Suchergebnisse auf Deutsch zusammen."
             sendPrompt()
         })
         return
     }
-    
+
     console.log(prompt)
-    
+
     document.getElementById("chat-input").value = ""
-    resizePromtTextarea()
+    resizePromptTextarea()
 
     if (prompt == "") {
         return
     }
 
     let userMessage = document.createElement("div")
-    userMessage.classList.add("message", "d-flex", "flex-row", "p-3")
+    userMessage.classList.add("message-user", "d-flex", "flex-row", "p-3")
     userMessage.innerHTML = `
         <div class="message-left p-2 fs-3">
             <i class="bi bi-person-fill"></i>
         </div>
         <md-block class="message-right p-2" markdown="1">
-            ${prompt}
+            ${convertHtmlToText(prompt)}
         </md-block>`
     document.getElementById("message-list").appendChild(userMessage)
+    modifyCodeBlocks()
     scrollMessageList()
 
     chatHistory[tab].push({ role: "user", content: prompt })
     restoreTabList()
 
     let responseMessage = document.createElement("div")
-    responseMessage.classList.add("message", "d-flex", "flex-row", "bg-dark-subtle", "p-3", "rounded")
+    responseMessage.classList.add("message-assistant", "d-flex", "flex-row", "bg-dark-subtle", "p-3", "rounded")
     responseMessage.innerHTML = `
         <div class="message-left p-2 fs-3">
             <i class="bi bi-cpu-fill"></i>
@@ -65,22 +66,23 @@ function sendPrompt() {
     scrollMessageList()
 
     let messages = getHistory()
-    promt(model, messages, (response) => {
+    apiPrompt(model, messages, (response) => {
         responseMessage.innerHTML = `
             <div class="message-left p-2 fs-3">
                 <i class="bi bi-cpu-fill"></i>
             </div>
             <md-block class="message-right p-2" markdown="1">
-                ${response}
+                ${convertHtmlToText(response)}
             </md-block>`
         scrollMessageList()
 
         chatHistory[tab].push({ role: "assistant", content: response })
+        setTimeout(modifyCodeBlocks, 100)
         saveChatHistory()
     })
 }
 
-function resizePromtTextarea() {
+function resizePromptTextarea() {
     let textarea = document.getElementById("chat-input")
     textarea.style.overflow = "hidden"
     textarea.style.height = 0
@@ -99,7 +101,11 @@ function scrollMessageList() {
 function modifyCodeBlocks() {
     var preTags = document.querySelectorAll("pre")
     preTags.forEach((preTag) => {
-        preTag.classList.add("d-flex", "flex-column")
+        if (preTag.classList.contains("modified")) {
+            return
+        }
+
+        preTag.classList.add("modified", "d-flex", "flex-column")
 
         let codeBar = document.createElement("div")
         codeBar.classList.add("d-flex", "flex-row", "justify-content-between", "align-items-center", "bg-dark", "p-1")
@@ -116,12 +122,34 @@ function modifyCodeBlocks() {
         copyButton.style.setProperty("--bs-btn-padding-y", ".25rem")
         copyButton.style.setProperty("--bs-btn-padding-x", ".5rem")
         copyButton.style.setProperty("--bs-btn-font-size", ".75rem")
+        copyButton.addEventListener("click", (event) => {
+            let text = preTag.innerText.substring(preTag.innerText.indexOf("\n") + 1)
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    copyButton.classList.add("btn-success")
+                    setTimeout(() => {
+                        copyButton.classList.remove("btn-success")
+                    }, 2000)
+                }, () => {
+                    copyButton.classList.add("btn-danger")
+                    setTimeout(() => {
+                        copyButton.classList.remove("btn-danger")
+                    }, 2000)
+                })
+        })
 
         codeBar.appendChild(copyButton)
 
         preTag.prepend(codeBar)
     })
 }
+
+function convertHtmlToText(html) {
+    return html.replace(/[\u00A0-\u9999<>\&]/gim, function (i) {
+        return "&#" + i.charCodeAt(0) + ";"
+    })
+}
+
 
 document.getElementById("chat-theme").addEventListener("click", () => {
     toggleTheme()
@@ -156,7 +184,7 @@ document.getElementById("chat-input").addEventListener("keypress", function (eve
 })
 
 document.getElementById("chat-input").addEventListener("keyup", function (event) {
-    resizePromtTextarea()
+    resizePromptTextarea()
 })
 
 document.getElementById("chat-menu").addEventListener("click", function (event) {
@@ -164,14 +192,14 @@ document.getElementById("chat-menu").addEventListener("click", function (event) 
 })
 
 document.getElementById("tab-new").addEventListener("click", function (event) {
-    newTab()
+    newChat()
 })
 
 document.getElementById("chat-context").addEventListener("change", function (event) {
     setContext(this.checked, chatSettings.context.size)
 })
 
-resizePromtTextarea()
+resizePromptTextarea()
 
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
