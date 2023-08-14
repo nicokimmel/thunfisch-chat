@@ -74,11 +74,11 @@ function sendPrompt() {
             <md-block class="message-right p-2" markdown="1">
                 ${convertHtmlToText(response)}
             </md-block>`
-        scrollMessageList()
 
         chatHistory[tab].push({ role: "assistant", content: response })
-        setTimeout(modifyCodeBlocks, 100)
+        modifyCodeBlocks(100)
         saveChatHistory()
+        scrollMessageList(500)
     })
 }
 
@@ -93,12 +93,22 @@ function resizePromptTextarea() {
     }
 }
 
-function scrollMessageList() {
+function scrollMessageList(delay) {
+    if (delay) {
+        setTimeout(scrollMessageList, delay)
+        return
+    }
+
     let messageList = document.getElementById("message-list")
     messageList.scrollTo(0, messageList.scrollHeight)
 }
 
-function modifyCodeBlocks() {
+function modifyCodeBlocks(delay) {
+    if (delay) {
+        setTimeout(modifyCodeBlocks, delay)
+        return
+    }
+
     var preTags = document.querySelectorAll("pre")
     preTags.forEach((preTag) => {
         if (preTag.classList.contains("modified")) {

@@ -31,7 +31,7 @@ class OpenAIWrapper {
             const response = await this.openai.createImage({
                 prompt: prompt.content,
                 n: 1,
-                size: "256x256"
+                size: "512x512"
             })
             callback(`![${prompt.content}](${response.data.data[0].url})`)
         } catch (error) {

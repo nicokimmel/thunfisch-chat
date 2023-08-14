@@ -1,12 +1,26 @@
 require("dotenv").config()
 
-const express = require("express")
 const path = require("path")
+
+const express = require("express")
 const app = express()
 const http = require("http").Server(app)
 
+const session = require("express-session")
+const passport = require("passport")
+
 app.use(express.json())
 app.use(express.static(path.join(__dirname, "public")))
+app.use(session({
+	secret: process.env.SESSION_SECRET,
+	saveUninitialized: true,
+	resave: false,
+	cookie: {
+		maxAge: 3600000
+	}
+}))
+app.use(passport.initialize())
+app.use(passport.session())
 
 const { OpenAIWrapper } = require("./openai")
 const openai = new OpenAIWrapper()
@@ -17,11 +31,28 @@ const upload = new UploadWrapper()
 const { SearchWrapper } = require("./search")
 const search = new SearchWrapper()
 
+const { SteamWrapper } = require("./steam")
+const steam = new SteamWrapper(passport)
+
 app.get("/", (req, res) => {
-	res.sendFile(path.join(__dirname, "public", "index.html"))
+	let file = req.isAuthenticated() ? "chat.html" : "login.html"
+	res.sendFile(path.join(__dirname, "public", file))
 })
 
+app.get("/auth", passport.authenticate("steam"))
+
+app.get("/auth/return", passport.authenticate("steam", {
+	successRedirect: "/",
+	failureRedirect: "/"
+}))
+
 app.post("/api", (req, res) => {
+	if (!req.isAuthenticated()) {
+		res.status(401)
+		res.send("Unauthorized")
+		return
+	}
+
 	let model = req.body.model
 	let messages = req.body.messages
 
@@ -33,10 +64,10 @@ app.post("/api", (req, res) => {
 			})
 			break
 		case "gpt4":
-			//openai.gpt("gpt-4", prompt, (response, reason) => {
-			res.status(200)
-			res.send("Coming soon.")
-			//})
+			openai.gpt("gpt-4", messages, (response, reason) => {
+				res.status(200)
+				res.send(response)
+			})
 			break
 		case "dalle":
 			openai.dalle(messages, (response) => {
@@ -46,14 +77,22 @@ app.post("/api", (req, res) => {
 			break
 		default:
 			res.status(400)
-			res.send("Bad model request")
+			res.send("Bad model request.")
 			break
 	}
 })
 
 app.post("/upload", upload.singleFile(), function (req, res, next) {
+	if (!req.isAuthenticated()) {
+		res.status(401)
+		res.send("Unauthorized")
+		return
+	}
+
 	if (!req.file) {
-		return res.status(400).json({ error: "Keine Datei hochgeladen!" })
+		res.status(400)
+		res.send("No file uploaded.")
+		return
 	}
 
 	upload.extractText(req.file.path, (text) => {
@@ -64,6 +103,17 @@ app.post("/upload", upload.singleFile(), function (req, res, next) {
 })
 
 app.post("/search", (req, res) => {
+	if (!req.isAuthenticated()) {
+		res.status(401)
+		res.send("Unauthorized")
+		return
+	}
+	
+	if(!req.body.query || req.body.query.length < 3) {
+		res.status(400)
+		res.send("Bad query request. Queries must be at least 3 characters long.")
+	}
+	
 	let query = req.body.query
 	search.google(query, (result) => {
 		res.status(200)

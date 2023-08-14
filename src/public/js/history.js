@@ -1,4 +1,4 @@
-var chatHistory = [[]]
+var chatHistory = []
 
 function restoreChatHistory() {
     if (localStorage.getItem("chatHistory")) {
@@ -71,10 +71,8 @@ function loadChatHistory(index) {
     saveSettings()
     restoreTabList()
 
-    setTimeout(() => {
-        modifyCodeBlocks()
-        scrollMessageList()
-    }, 100)
+    scrollMessageList(2000)
+    modifyCodeBlocks(100)
 }
 
 function removeChat(index) {
