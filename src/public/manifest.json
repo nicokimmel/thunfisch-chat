@@ -6,8 +6,8 @@
 	"background_color": "#212529",
 	"theme_color": "#0d6efd",
 	"dir": "auto",
-	"display": "portrait",
-	"orientation": "any",
+	"display": "standalone",
+	"orientation": "portrait",
 	"icons": [
 		{
 			"src": "windows11/SmallTile.scale-100.png",

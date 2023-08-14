@@ -122,5 +122,5 @@ app.post("/search", (req, res) => {
 })
 
 http.listen(process.env.PORT, () => {
-	console.log(`Server läuft auf http://localhost:${process.env.PORT}`)
+	console.log(`Server läuft auf *${process.env.PORT}`)
 })
