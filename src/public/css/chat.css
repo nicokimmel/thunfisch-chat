@@ -39,7 +39,6 @@ md-block p {
     height: 66px;
 }
 
-
 #chat {
     height: calc(100vh - 66px);
 }
@@ -48,11 +47,17 @@ md-block p {
     width: 300px;
 }
 
+@media screen and (max-width: 992px) {
+    #chat-left {
+        width: 100%;
+    }
+}
+
 .list-group-item {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    cursor: pointer; 
+    cursor: pointer;
 }
 
 .list-group-item-delete {

@@ -1,6 +1,7 @@
 var defaultChatSettings = {
     "theme": "dark",
     "model": "gpt3",
+    "menu": true,
     "tab": 0,
     "context": {
         "enabled": true,
@@ -15,6 +16,7 @@ function restoreSettings() {
     }
     setTheme(chatSettings.theme)
     setModel(chatSettings.model)
+    showMenu(chatSettings.menu)
     setContext(chatSettings.context.enabled, chatSettings.context.size)
 }
 
@@ -23,18 +25,13 @@ function saveSettings() {
 }
 
 function toggleMenu() {
-    let menu = document.getElementById("chat-left")
-    if (menu.classList.contains("d-none")) {
-        menu.classList.remove("d-none")
-    } else {
-        menu.classList.add("d-none")
-    }
+    showMenu(!chatSettings.menu)
 }
 
 function setTheme(theme) {
     chatSettings.theme = theme
     saveSettings()
-    
+
     document.documentElement.setAttribute("data-bs-theme", chatSettings.theme)
     if (theme === "dark") {
         document.getElementById("chat-theme").innerHTML = `<i class="bi bi-sun-fill"></i>`
@@ -67,11 +64,23 @@ function setModel(model) {
     }
 }
 
+function showMenu(shown) {
+    let menu = document.getElementById("chat-left")
+    if (shown) {
+        menu.classList.remove("d-none")
+        chatSettings.menu = true
+    } else {
+        menu.classList.add("d-none")
+        chatSettings.menu = false
+    }
+    saveSettings()
+}
+
 function setContext(enabled, size) {
     chatSettings.context.enabled = enabled
     chatSettings.context.size = size
     saveSettings()
-    
+
     document.getElementById("chat-context").checked = enabled
 }
 
