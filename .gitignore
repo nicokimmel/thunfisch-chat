@@ -131,3 +131,4 @@ dist
 
 package-lock.json
 src/uploads
+secrets.json
