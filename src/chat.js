@@ -6,21 +6,8 @@ const express = require("express")
 const app = express()
 const http = require("http").Server(app)
 
-const session = require("express-session")
-const passport = require("passport")
-
 app.use(express.json())
 app.use(express.static(path.join(__dirname, "public")))
-app.use(session({
-	secret: process.env.SESSION_SECRET,
-	saveUninitialized: true,
-	resave: false,
-	cookie: {
-		maxAge: 7 * 24 * 60 * 60 * 1000
-	}
-}))
-app.use(passport.initialize())
-app.use(passport.session())
 
 const { OpenAIWrapper } = require("./openai")
 const openai = new OpenAIWrapper()
@@ -31,23 +18,23 @@ const upload = new UploadWrapper()
 const { SearchWrapper } = require("./search")
 const search = new SearchWrapper()
 
-const { SteamWrapper } = require("./steam")
-const steam = new SteamWrapper(passport)
+const { SecretsWrapper } = require("./secrets")
+const secrets = new SecretsWrapper()
 
-app.get("/", (req, res) => {
-	let file = req.isAuthenticated() ? "chat.html" : "login.html"
-	res.sendFile(path.join(__dirname, "public", file))
+app.get("/:secret", (req, res) => {
+	let secret = req.params.secret
+	if (!secrets.isSecretValid(secret)) {
+		res.status(401)
+		res.send("Unauthorized")
+		return
+	}
+
+	res.sendFile(path.join(__dirname, "public", "chat.html"))
 })
 
-app.get("/auth", passport.authenticate("steam"))
-
-app.get("/auth/return", passport.authenticate("steam", {
-	successRedirect: "/",
-	failureRedirect: "/"
-}))
-
 app.post("/api", (req, res) => {
-	if (!req.isAuthenticated()) {
+	let secret = req.body.secret
+	if (!secrets.isSecretValid(secret)) {
 		res.status(401)
 		res.send("Unauthorized")
 		return
@@ -83,7 +70,8 @@ app.post("/api", (req, res) => {
 })
 
 app.post("/upload", upload.singleFile(), function (req, res, next) {
-	if (!req.isAuthenticated()) {
+	let secret = req.body.secret
+	if (!secrets.isSecretValid(secret)) {
 		res.status(401)
 		res.send("Unauthorized")
 		return
@@ -103,17 +91,18 @@ app.post("/upload", upload.singleFile(), function (req, res, next) {
 })
 
 app.post("/search", (req, res) => {
-	if (!req.isAuthenticated()) {
+	let secret = req.body.secret
+	if (!secrets.isSecretValid(secret)) {
 		res.status(401)
 		res.send("Unauthorized")
 		return
 	}
-	
-	if(!req.body.query || req.body.query.length < 3) {
+
+	if (!req.body.query || req.body.query.length < 3) {
 		res.status(400)
 		res.send("Bad query request. Queries must be at least 3 characters long.")
 	}
-	
+
 	let query = req.body.query
 	search.google(query, (result) => {
 		res.status(200)
@@ -122,5 +111,7 @@ app.post("/search", (req, res) => {
 })
 
 http.listen(process.env.PORT, () => {
+	secrets.createFileIfNotExists()
+	upload.createFolderIfNotExists()
 	console.log(`Server läuft auf *${process.env.PORT}`)
 })

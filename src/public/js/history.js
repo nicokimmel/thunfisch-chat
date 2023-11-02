@@ -48,7 +48,7 @@ function loadChatHistory(index) {
                     <i class="bi bi-person-fill"></i>
                 </div>
                 <md-block class="message-right p-2" markdown="1">
-                    ${convertHtmlToText(message.content)}
+                    ${convertHtmlToText(message.content).replaceAll("\n", "  \n")}
                 </md-block>`
             messageList.appendChild(userMessage)
 

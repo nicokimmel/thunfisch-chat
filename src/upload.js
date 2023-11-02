@@ -28,6 +28,7 @@ class UploadWrapper {
         }
 
         this.upload = multer({ storage: storage, fileFilter: fileFilter })
+        this.uploadFolder = "./uploads"
     }
 
     singleFile() {
@@ -42,6 +43,12 @@ class UploadWrapper {
 
     removeFile(file) {
         fs.unlinkSync(file)
+    }
+
+    createFolderIfNotExists() {
+        if (!fs.existsSync(this.uploadFolder)) {
+            fs.mkdirSync(this.uploadFolder)
+        }
     }
 }
 

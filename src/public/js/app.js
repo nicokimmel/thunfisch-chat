@@ -5,7 +5,7 @@ var defaultChatSettings = {
     "tab": 0,
     "context": {
         "enabled": true,
-        "size": 5
+        "size": 10
     }
 }
 var chatSettings = defaultChatSettings

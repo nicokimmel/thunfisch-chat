@@ -36,7 +36,7 @@ function sendPrompt() {
             <i class="bi bi-person-fill"></i>
         </div>
         <md-block class="message-right p-2" markdown="1">
-            ${convertHtmlToText(prompt)}
+            ${convertHtmlToText(prompt).replaceAll("\n", "  \n")}
         </md-block>`
     document.getElementById("message-list").appendChild(userMessage)
     modifyCodeBlocks()
@@ -218,6 +218,9 @@ Dropzone.autoDiscover = false
 var dropzone = new Dropzone("#chat-input", {
     url: "/upload",
     paramName: "file",
+    params: {
+        secret: getSecretFromURL()
+    },
     clickable: false,
     previewsContainer: false,
     acceptedFiles: ".doc,.docx,.dot,.pdf,.csv,.txt,.xls,.xlsx",
