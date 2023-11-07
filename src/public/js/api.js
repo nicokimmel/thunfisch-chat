@@ -5,32 +5,41 @@ function getSecretFromURL() {
     return secret
 }
 
-console.log(getSecretFromURL())
+function chatCompletion(model, messages, onStream, onComplete) {
+    let request = new XMLHttpRequest()
 
-function apiPrompt(model, messages, callback) {
-    let api = new XMLHttpRequest()
-    api.open("POST", "/api", true);
-    api.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
-    api.send(JSON.stringify({ "secret": getSecretFromURL(), "model": model, "messages": messages }))
+    request.open("POST", "/api", true);
+    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+    request.send(JSON.stringify({
+        "secret": getSecretFromURL(),
+        "model": model,
+        "messages": messages
+    }))
 
-    api.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            console.log(this.responseText)
-            callback(this.responseText)
-        }
+    request.onprogress = function () {
+        onStream(request.responseText)
+    }
+
+    request.onload = function () {
+        onComplete(request.responseText)
     }
 }
 
-function apiSearch(query, callback) {
-    let api = new XMLHttpRequest()
-    api.open("POST", "/search", true);
-    api.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
-    api.send(JSON.stringify({ "secret": getSecretFromURL(), "query": query }))
+function searchCompletion(query, onStream, onComplete) {
+    let request = new XMLHttpRequest()
 
-    api.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            console.log(this.responseText)
-            callback(this.responseText)
-        }
+    request.open("POST", "/api", true);
+    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+    request.send(JSON.stringify({
+        "secret": getSecretFromURL(),
+        "query": query
+    }))
+
+    request.onprogress = function () {
+        onStream(request.responseText)
+    }
+
+    request.onload = function () {
+        onComplete(request.responseText)
     }
 }

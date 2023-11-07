@@ -1,42 +1,48 @@
-const { Configuration, OpenAIApi } = require("openai")
+const { OpenAI } = require("openai")
 
 class OpenAIWrapper {
 
     constructor() {
-        const configuration = new Configuration({
+        this.openai = new OpenAI({
             apiKey: process.env.OPENAI_API_KEY,
             organization: process.env.OPENAI_ORG_ID
         })
-        this.openai = new OpenAIApi(configuration)
     }
 
-    async gpt(version, messages, callback) {
+    async gpt(res, version, messages) {
         try {
-            const response = await this.openai.createChatCompletion({
+            const stream = await this.openai.beta.chat.completions.stream({
                 model: version,
-                messages: messages
+                messages: messages,
+                stream: true
             })
-            let reason = response.data.choices[0].finish_reason
-            let message = response.data.choices[0].message.content
-            callback(message, reason)
+            for await (const chunk of stream) {
+                res.write(chunk.choices[0]?.delta?.content || '')
+            }
+            res.status(200)
+            res.end()
         } catch (error) {
-            callback(`Die Anfrage konnte nicht verarbeitet werden.  
-                \`${error.response.data.error.message || error.message}\``)
+            res.write(`Die Anfrage konnte nicht verarbeitet werden.  
+                \`${error.message}\``)
+            res.end()
         }
     }
 
-    async dalle(messages, callback) {
+    async dalle(res, version, messages) {
         let prompt = messages[messages.length - 1]
         try {
-            const response = await this.openai.createImage({
+            const response = await this.openai.images.generate({
+                model: version,
                 prompt: prompt.content,
-                n: 1,
-                size: "512x512"
+                size: "1024x1024",
+                quality: "standard",
+                response_format: "b64_json"
             })
-            callback(`![${prompt.content}](${response.data.data[0].url})`)
+            res.status(400)
+            res.send(`![${prompt.content}](data:image/png;base64,${response.data[0].b64_json})`)
         } catch (error) {
-            callback(`Die Anfrage konnte nicht verarbeitet werden.  
-                \`${error.response.data.error.message || error.message}\``)
+            res.send(`Die Anfrage konnte nicht verarbeitet werden.  
+                \`${error.message}\``)
         }
 
     }

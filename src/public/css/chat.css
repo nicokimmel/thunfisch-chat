@@ -31,6 +31,12 @@ pre {
     max-width: 60vw;
 }
 
+img {
+    width: 50%;
+    height: 50%;
+    border-radius: var(--bs-border-radius);
+}
+
 md-block p {
     margin: 0;
 }
@@ -71,6 +77,3 @@ md-block p {
     width: auto;
 }
 
-p {
-    margin-bottom: 10px !important;
-}

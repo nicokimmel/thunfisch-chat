@@ -45,22 +45,13 @@ app.post("/api", (req, res) => {
 
 	switch (model) {
 		case "gpt3":
-			openai.gpt("gpt-3.5-turbo", messages, (response, reason) => {
-				res.status(200)
-				res.send(response)
-			})
+			openai.gpt(res, "gpt-3.5-turbo-1106", messages)
 			break
 		case "gpt4":
-			openai.gpt("gpt-4", messages, (response, reason) => {
-				res.status(200)
-				res.send(response)
-			})
+			openai.gpt(res, "gpt-4-1106-preview", messages)
 			break
 		case "dalle":
-			openai.dalle(messages, (response) => {
-				res.status(200)
-				res.send(response)
-			})
+			openai.dalle(res, "dall-e-3", messages)
 			break
 		default:
 			res.status(400)

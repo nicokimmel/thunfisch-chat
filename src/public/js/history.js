@@ -1,6 +1,6 @@
 var chatHistory = []
 
-function restoreChatHistory() {
+function restoreHistory() {
     if (localStorage.getItem("chatHistory")) {
         chatHistory = JSON.parse(localStorage.getItem("chatHistory"))
     } else {
@@ -17,18 +17,18 @@ function restoreTabList() {
         historyItem.classList.add("list-group", "list-group-horizontal")
         historyItem.innerHTML = `
             <li class="list-group-item list-group-item-action ${chatSettings.tab === index ? "active" : ""}"
-                onclick="loadChatHistory(${index})">${chat[0]?.content || "Unbenannt"}</li>
+                onclick="loadHistory(${index})">${chat[0]?.content || "Unbenannt"}</li>
             <li class="list-group-item list-group-item-action list-group-item-delete ${chatSettings.tab === index ? "active" : ""}"
                 onclick="removeChat(${index})"><i class="bi bi-trash-fill"></i></li>`
         historyList.appendChild(historyItem)
     })
 }
 
-function saveChatHistory() {
+function saveHistory() {
     localStorage.setItem("chatHistory", JSON.stringify(chatHistory))
 }
 
-function loadChatHistory(index) {
+function loadHistory(index) {
     if (index < 0 || index >= chatHistory.length) {
         return
     }
@@ -38,41 +38,19 @@ function loadChatHistory(index) {
 
     let chat = chatHistory[index]
     chat.forEach(message => {
-
         if (message.role === "user") {
-
-            let userMessage = document.createElement("div")
-            userMessage.classList.add("message-user", "d-flex", "flex-row", "p-3")
-            userMessage.innerHTML = `
-                <div class="message-left p-2 fs-3">
-                    <i class="bi bi-person-fill"></i>
-                </div>
-                <md-block class="message-right p-2" markdown="1">
-                    ${convertHtmlToText(message.content).replaceAll("\n", "  \n")}
-                </md-block>`
-            messageList.appendChild(userMessage)
-
+            addUserMessage(message.content)
         } else if (message.role === "assistant") {
-
-            let assistantMessage = document.createElement("div")
-            assistantMessage.classList.add("message-assistant", "d-flex", "flex-row", "bg-dark-subtle", "p-3", "rounded")
-            assistantMessage.innerHTML = `
-            <div class="message-left p-2 fs-3">
-                <i class="bi bi-cpu-fill"></i>
-            </div>
-            <md-block class="message-right p-2" markdown="1">
-                ${convertHtmlToText(message.content)}
-            </md-block>`
-            messageList.appendChild(assistantMessage)
+            let assistantElement = addAssistantMessage()
+            setAssistantMessage(assistantElement, message.content)
         }
     })
-
+    
     chatSettings.tab = index
     saveSettings()
     restoreTabList()
-
-    scrollMessageList(2000)
-    modifyCodeBlocks(100)
+    prettifyCodeBlocks()
+    scrollMessageList()
 }
 
 function removeChat(index) {
@@ -81,7 +59,7 @@ function removeChat(index) {
     }
 
     chatHistory.splice(index, 1)
-    saveChatHistory()
+    saveHistory()
 
     if (chatSettings.tab >= chatHistory.length) {
         chatSettings.tab = chatHistory.length - 1
@@ -92,24 +70,20 @@ function removeChat(index) {
     }
 
     saveSettings()
-    loadChatHistory(chatSettings.tab)
+    loadHistory(chatSettings.tab)
     restoreTabList()
 }
 
 function newChat() {
-
     let index = chatHistory.length
-
     chatHistory.push([])
-
     chatSettings.tab = index
     saveSettings()
-    saveChatHistory()
-
-    loadChatHistory(index)
+    saveHistory()
+    loadHistory(index)
 }
 
-function getHistory() {
+function getContext() {
     let count = 1
     if (chatSettings.context.enabled) {
         count = chatSettings.context.size
@@ -117,6 +91,6 @@ function getHistory() {
     return chatHistory[chatSettings.tab].slice(-count)
 }
 
-restoreChatHistory()
-loadChatHistory(chatSettings.tab)
+restoreHistory()
+loadHistory(chatSettings.tab)
 restoreTabList()

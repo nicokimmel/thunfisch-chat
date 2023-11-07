@@ -3,32 +3,50 @@ function sendPrompt() {
     let prompt = document.getElementById("chat-input").value
     let tab = chatSettings.tab
 
-    if (Object.keys(attachedFiles).length > 0) {
-        for (let filename in attachedFiles) {
-            prompt += `\n\n${filename}:\n`
-            prompt += `\`\`\`\n${attachedFiles[filename]}\`\`\``
-        }
-        clearAttachedFiles()
+    clearTextarea()
+
+    if (prompt === "") {
+        return
     }
 
-    if (chatSettings.model === "google") {
-        apiSearch(prompt, (result) => {
-            setModel("gpt3")
-            document.getElementById("chat-input").value += "\n\nGoogle Suchergebnisse in JSON formatiert:\n\`\`\`JSON\n" + result + "\n\`\`\`\nBitte fasse die Suchergebnisse auf Deutsch zusammen."
-            sendPrompt()
+    if (isGoogleSearch(model)) {
+        return
+    }
+
+    addFilesToPrompt()
+
+    addUserMessage(prompt)
+    chatHistory[tab].push({ role: "user", content: prompt })
+    prettifyCodeBlocks()
+
+    restoreTabList()
+
+    let assistantElement = addAssistantMessage()
+    scrollMessageList()
+
+    let context = getContext()
+    chatCompletion(model, context,
+        (response) => {
+            setAssistantMessage(assistantElement, response)
+            scrollMessageList()
+        },
+        (finalResponse) => {
+            chatHistory[tab].push({ role: "assistant", content: finalResponse })
+            saveHistory()
+            prettifyCodeBlocks()
+            scrollMessageList()
         })
-        return
+}
+
+function isGoogleSearch(model) {
+    if (model === "google") {
+        // TODO Google Search
+        return true
     }
+    return false
+}
 
-    console.log(prompt)
-
-    document.getElementById("chat-input").value = ""
-    resizePromptTextarea()
-
-    if (prompt == "") {
-        return
-    }
-
+function addUserMessage(message) {
     let userMessage = document.createElement("div")
     userMessage.classList.add("message-user", "d-flex", "flex-row", "p-3")
     userMessage.innerHTML = `
@@ -36,18 +54,16 @@ function sendPrompt() {
             <i class="bi bi-person-fill"></i>
         </div>
         <md-block class="message-right p-2" markdown="1">
-            ${convertHtmlToText(prompt).replaceAll("\n", "  \n")}
+            ${convertHtmlToText(message).replaceAll("\n", "  \n")}
         </md-block>`
     document.getElementById("message-list").appendChild(userMessage)
-    modifyCodeBlocks()
-    scrollMessageList()
+    return userMessage
+}
 
-    chatHistory[tab].push({ role: "user", content: prompt })
-    restoreTabList()
-
-    let responseMessage = document.createElement("div")
-    responseMessage.classList.add("message-assistant", "d-flex", "flex-row", "bg-dark-subtle", "p-3", "rounded")
-    responseMessage.innerHTML = `
+function addAssistantMessage() {
+    let assistantMessage = document.createElement("div")
+    assistantMessage.classList.add("message-assistant", "d-flex", "flex-row", "bg-dark-subtle", "p-3", "rounded")
+    assistantMessage.innerHTML = `
         <div class="message-left p-2 fs-3">
             <i class="bi bi-cpu-fill"></i>
         </div>
@@ -62,53 +78,37 @@ function sendPrompt() {
                 <span class="visually-hidden">Loading...</span>
             </div>
         </md-block>`
-    document.getElementById("message-list").appendChild(responseMessage)
-    scrollMessageList()
+    document.getElementById("message-list").appendChild(assistantMessage)
+    return assistantMessage
+}
 
-    let messages = getHistory()
-    apiPrompt(model, messages, (response) => {
-        responseMessage.innerHTML = `
-            <div class="message-left p-2 fs-3">
-                <i class="bi bi-cpu-fill"></i>
-            </div>
-            <md-block class="message-right p-2" markdown="1">
-                ${convertHtmlToText(response)}
-            </md-block>`
+function setAssistantMessage(messageElement, message) {
+    messageElement.innerHTML = `
+        <div class="message-left p-2 fs-3">
+            <i class="bi bi-cpu-fill"></i>
+        </div>
+        <md-block class="message-right p-2" markdown="1">
+            ${convertHtmlToText(message)}
+        </md-block>`
+}
 
-        chatHistory[tab].push({ role: "assistant", content: response })
-        modifyCodeBlocks(100)
-        saveChatHistory()
-        scrollMessageList(500)
+function addFilesToPrompt() {
+    if (Object.keys(attachedFiles).length > 0) {
+        for (let filename in attachedFiles) {
+            prompt += `\n\n${filename}:\n`
+            prompt += `\`\`\`\n${attachedFiles[filename]}\`\`\``
+        }
+        clearAttachedFiles()
+    }
+}
+
+function convertHtmlToText(html) {
+    return html.replace(/[\u00A0-\u9999<>\&]/gim, function (i) {
+        return "&#" + i.charCodeAt(0) + ";"
     })
 }
 
-function resizePromptTextarea() {
-    let textarea = document.getElementById("chat-input")
-    textarea.style.overflow = "hidden"
-    textarea.style.height = 0
-    if (textarea.scrollHeight < 200) {
-        textarea.style.height = textarea.scrollHeight + "px"
-    } else {
-        textarea.style.height = "200px"
-    }
-}
-
-function scrollMessageList(delay) {
-    if (delay) {
-        setTimeout(scrollMessageList, delay)
-        return
-    }
-
-    let messageList = document.getElementById("message-list")
-    messageList.scrollTo(0, messageList.scrollHeight)
-}
-
-function modifyCodeBlocks(delay) {
-    if (delay) {
-        setTimeout(modifyCodeBlocks, delay)
-        return
-    }
-
+function prettifyCodeBlocks() {
     var preTags = document.querySelectorAll("pre")
     preTags.forEach((preTag) => {
         if (preTag.classList.contains("modified")) {
@@ -139,12 +139,12 @@ function modifyCodeBlocks(delay) {
                     copyButton.classList.add("btn-success")
                     setTimeout(() => {
                         copyButton.classList.remove("btn-success")
-                    }, 2000)
+                    }, 1000)
                 }, () => {
                     copyButton.classList.add("btn-danger")
                     setTimeout(() => {
                         copyButton.classList.remove("btn-danger")
-                    }, 2000)
+                    }, 1000)
                 })
         })
 
@@ -154,12 +154,52 @@ function modifyCodeBlocks(delay) {
     })
 }
 
-function convertHtmlToText(html) {
-    return html.replace(/[\u00A0-\u9999<>\&]/gim, function (i) {
-        return "&#" + i.charCodeAt(0) + ";"
-    })
+function clearTextarea() {
+    document.getElementById("chat-input").value = ""
+    resizeTextarea()
 }
 
+function resizeTextarea() {
+    let textarea = document.getElementById("chat-input")
+    textarea.style.overflow = "hidden"
+    textarea.style.height = 0
+    if (textarea.scrollHeight < 200) {
+        textarea.style.height = textarea.scrollHeight + "px"
+    } else {
+        textarea.style.height = "200px"
+    }
+}
+
+function scrollMessageList() {
+    let messageList = document.getElementById("message-list")
+    messageList.scrollTo(0, messageList.scrollHeight)
+}
+
+function setupTooltips() {
+    var tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    var tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+}
+
+function setupDropzone() {
+    Dropzone.autoDiscover = false
+    var dropzone = new Dropzone("#chat-input", {
+        url: "/upload",
+        paramName: "file",
+        params: {
+            secret: getSecretFromURL()
+        },
+        clickable: false,
+        previewsContainer: false,
+        acceptedFiles: ".doc,.docx,.dot,.pdf,.csv,.txt,.xls,.xlsx",
+        maxFilesize: 5,
+        dictDefaultMessage: "Datei hier ablegen",
+        init: function () {
+            this.on("success", function (file, content) {
+                addAttachedFile(file.name, content)
+            })
+        }
+    })
+}
 
 document.getElementById("chat-theme").addEventListener("click", () => {
     toggleTheme()
@@ -194,7 +234,7 @@ document.getElementById("chat-input").addEventListener("keypress", function (eve
 })
 
 document.getElementById("chat-input").addEventListener("keyup", function (event) {
-    resizePromptTextarea()
+    resizeTextarea()
 })
 
 document.getElementById("chat-menu").addEventListener("click", function (event) {
@@ -209,28 +249,7 @@ document.getElementById("chat-context").addEventListener("change", function (eve
     setContext(this.checked, chatSettings.context.size)
 })
 
-resizePromptTextarea()
+resizeTextarea()
 
-const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-
-Dropzone.autoDiscover = false
-var dropzone = new Dropzone("#chat-input", {
-    url: "/upload",
-    paramName: "file",
-    params: {
-        secret: getSecretFromURL()
-    },
-    clickable: false,
-    previewsContainer: false,
-    acceptedFiles: ".doc,.docx,.dot,.pdf,.csv,.txt,.xls,.xlsx",
-    maxFilesize: 5,
-    dictDefaultMessage: "Datei hier ablegen",
-    init: function () {
-        this.on("success", function (file, content) {
-            addAttachedFile(file.name, content)
-            console.log(file.name)
-            console.log(content)
-        })
-    }
-})
+setupDropzone()
+setupTooltips()
