@@ -34,7 +34,7 @@ function sendPrompt() {
             chatHistory[tab].push({ role: "assistant", content: finalResponse })
             saveHistory()
             prettifyCodeBlocks()
-            scrollMessageList()
+            window.setTimeout(scrollMessageList, 1000)
         })
 }
 
