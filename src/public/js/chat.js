@@ -3,15 +3,15 @@ function sendPrompt() {
     let prompt = document.getElementById("chat-input").value
     let tab = chatSettings.tab
 
-    clearTextarea()
-
     if (prompt === "") {
         return
     }
 
-    if (isGoogleSearch(model)) {
+    if (isGoogleSearch(model, prompt)) {
         return
     }
+    
+    clearTextarea()
 
     addFilesToPrompt()
 
@@ -38,9 +38,13 @@ function sendPrompt() {
         })
 }
 
-function isGoogleSearch(model) {
+function isGoogleSearch(model, prompt) {
     if (model === "google") {
-        // TODO Google Search
+        searchCompletion(prompt, (searchResult) => {
+            document.getElementById("chat-input").value += "\n\nGoogle Suchergebnisse in JSON formatiert:\n\`\`\`JSON\n" + searchResult + "\n\`\`\`\nBitte fasse die Suchergebnisse auf Deutsch zusammen."
+            setModel("gpt3")
+            sendPrompt()
+        })
         return true
     }
     return false

@@ -25,19 +25,15 @@ function chatCompletion(model, messages, onStream, onComplete) {
     }
 }
 
-function searchCompletion(query, onStream, onComplete) {
+function searchCompletion(query, onComplete) {
     let request = new XMLHttpRequest()
 
-    request.open("POST", "/api", true);
+    request.open("POST", "/search", true);
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
     request.send(JSON.stringify({
         "secret": getSecretFromURL(),
         "query": query
     }))
-
-    request.onprogress = function () {
-        onStream(request.responseText)
-    }
 
     request.onload = function () {
         onComplete(request.responseText)
