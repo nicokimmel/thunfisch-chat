@@ -21,6 +21,10 @@ const search = new SearchWrapper()
 const { SecretsWrapper } = require("./secrets")
 const secrets = new SecretsWrapper()
 
+app.get("/", (req, res) => {
+	res.sendFile(path.join(__dirname, "public", "login.html"))
+})
+
 app.get("/:secret", (req, res) => {
 	let secret = req.params.secret
 	if (!secrets.isSecretValid(secret)) {
