@@ -38,13 +38,9 @@ class OpenAIWrapper {
 
             for await (const chunk of stream) {
                 let delta = chunk.choices[0]?.delta
-
-                console.log(delta)
-
                 if (delta.content) {
-                    res.write(chunk.choices[0]?.delta?.content)
+                    res.write(delta.content)
                 }
-
             }
 
             res.status(200)
@@ -65,13 +61,9 @@ class OpenAIWrapper {
                 quality: "standard",
                 response_format: "url"
             })
-            console.log("ANGEKOMMEN")
-            console.log(response.data[0].url)
-            return response.data[0].url
+            return { success: true, system: "Please format the url in Markdown and include it into your answer. The prompt should be the alt text in brackets.", url: response.data[0].url, prompt: prompt }
         } catch (error) {
-            console.log("ERROR")
-            console.log(error.message)
-            return { success: false, reason: error.message }
+            return { success: false, system: `An error happened. Please include this message into your answer: ${error.message}` }
         }
     }
 }

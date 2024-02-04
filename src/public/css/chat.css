@@ -28,17 +28,13 @@ pre code {
 }
 
 pre {
-    max-width: 60vw;
+    width: 60vw;
 }
 
 img {
     width: 50%;
     height: 50%;
     border-radius: var(--bs-border-radius);
-}
-
-md-block p {
-    margin: 0;
 }
 
 #header {

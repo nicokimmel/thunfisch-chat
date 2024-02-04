@@ -5,7 +5,8 @@ var defaultChatSettings = {
     "context": {
         "enabled": true,
         "size": 10
-    }
+    },
+    "secret": ""
 }
 var chatSettings = defaultChatSettings
 
@@ -16,6 +17,7 @@ function restoreSettings() {
     setTheme(chatSettings.theme)
     showMenu(chatSettings.menu)
     setContext(chatSettings.context.enabled, chatSettings.context.size)
+    setSecret(chatSettings.secret)
 }
 
 function saveSettings() {
@@ -64,6 +66,12 @@ function setContext(enabled, size) {
     saveSettings()
 
     document.getElementById("chat-context").checked = enabled
+}
+
+function setSecret(secret) {
+    chatSettings.secret = secret
+    document.getElementById("secret").value = secret
+    saveSettings()
 }
 
 restoreSettings()

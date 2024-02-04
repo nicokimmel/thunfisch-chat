@@ -25,13 +25,17 @@ app.post("/chat", (req, res) => {
 	let secret = req.body.secret
 	let messages = req.body.messages
 
-	let openaiii = new OpenAIWrapper(secret)
-	openaiii.chat(res, messages)
+	let openai = new OpenAIWrapper(secret)
+	openai.chat(res, messages)
 })
 
 app.post("/upload", upload.singleFile(), function (req, res, next) {
 	let secret = req.body.secret
 
+	res.status(501)
+	res.send("Not implemented yet.")
+	return
+	
 	if (!req.file) {
 		res.status(400)
 		res.send("No file uploaded.")
@@ -48,6 +52,10 @@ app.post("/upload", upload.singleFile(), function (req, res, next) {
 app.post("/search", (req, res) => {
 	let secret = req.body.secret
 
+	res.status(501)
+	res.send("Not implemented yet.")
+	return
+	
 	if (!req.body.query || req.body.query.length < 3) {
 		res.status(400)
 		res.send("Bad query request. Queries must be at least 3 characters long.")

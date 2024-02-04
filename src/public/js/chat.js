@@ -12,7 +12,6 @@ function sendPrompt() {
 
     addUserMessage(prompt)
     chatHistory[tab].push({ role: "user", content: prompt })
-    prettifyCodeBlocks()
 
     restoreTabList()
 
@@ -28,7 +27,6 @@ function sendPrompt() {
         (finalResponse) => {
             chatHistory[tab].push({ role: "assistant", content: finalResponse })
             saveHistory()
-            prettifyCodeBlocks()
             window.setTimeout(scrollMessageList, 1000)
         })
 }
@@ -40,9 +38,9 @@ function addUserMessage(message) {
         <div class="message-left p-2 fs-3">
             <i class="bi bi-person-fill"></i>
         </div>
-        <md-block class="message-right p-2" markdown="1">
-            ${convertHtmlToText(message).replaceAll("\n", "  \n")}
-        </md-block>`
+        <div class="message-right p-2">
+            ${message}
+        </div>`
     document.getElementById("message-list").appendChild(userMessage)
     return userMessage
 }
@@ -54,7 +52,7 @@ function addAssistantMessage() {
         <div class="message-left p-2 fs-3">
             <i class="bi bi-cpu-fill"></i>
         </div>
-        <md-block class="message-right p-2" markdown="1">
+        <div class="message-right p-2" markdown="1">
             <div class="spinner-grow spinner-grow-sm" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
@@ -64,7 +62,7 @@ function addAssistantMessage() {
             <div class="spinner-grow spinner-grow-sm" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
-        </md-block>`
+        </div>`
     document.getElementById("message-list").appendChild(assistantMessage)
     return assistantMessage
 }
@@ -74,9 +72,10 @@ function setAssistantMessage(messageElement, message) {
         <div class="message-left p-2 fs-3">
             <i class="bi bi-cpu-fill"></i>
         </div>
-        <md-block class="message-right p-2" markdown="1">
-            ${convertHtmlToText(message)}
-        </md-block>`
+        <div class="message-right p-2" markdown="1">
+            ${markdown.makeHtml(message)}
+        </div>`
+        prettifyPreBlocks(messageElement)
 }
 
 function addFilesToPrompt() {
@@ -95,19 +94,15 @@ function convertHtmlToText(html) {
     })
 }
 
-function prettifyCodeBlocks() {
-    var preTags = document.querySelectorAll("pre")
-    preTags.forEach((preTag) => {
-        if (preTag.classList.contains("modified")) {
-            return
-        }
-
+function prettifyPreBlocks(messageElement) {
+    var codeTags = messageElement.querySelectorAll("pre")
+    codeTags.forEach((preTag) => {
         preTag.classList.add("modified", "d-flex", "flex-column")
 
         let codeBar = document.createElement("div")
         codeBar.classList.add("d-flex", "flex-row", "justify-content-between", "align-items-center", "bg-dark", "p-1")
 
-        let languageText = preTag.className.match(/language-(\w+)/)?.[1] || "text"
+        let languageText = preTag.querySelector("code").className.match(/language-(\w+)/)?.[1] || "text"
         let codeLanguage = document.createElement("span")
         codeLanguage.innerHTML = languageText.toUpperCase()
 
@@ -173,7 +168,7 @@ function setupDropzone() {
         url: "/upload",
         paramName: "file",
         params: {
-            secret: getSecretFromURL()
+            secret: chatSettings.secret
         },
         clickable: false,
         previewsContainer: false,
@@ -187,6 +182,10 @@ function setupDropzone() {
         }
     })
 }
+
+document.getElementById("secret").addEventListener("keyup", function () {
+    setSecret(this.value)
+})
 
 document.getElementById("chat-theme").addEventListener("click", () => {
     toggleTheme()
@@ -219,6 +218,8 @@ document.getElementById("tab-new").addEventListener("click", function (event) {
 document.getElementById("chat-context").addEventListener("change", function (event) {
     setContext(this.checked, chatSettings.context.size)
 })
+
+var markdown = new showdown.Converter()
 
 resizeTextarea()
 
