@@ -1,5 +1,4 @@
 function sendPrompt() {
-    let model = chatSettings["model"]
     let prompt = document.getElementById("chat-input").value
     let tab = chatSettings.tab
 
@@ -7,10 +6,6 @@ function sendPrompt() {
         return
     }
 
-    if (isGoogleSearch(model, prompt)) {
-        return
-    }
-    
     clearTextarea()
 
     addFilesToPrompt()
@@ -25,7 +20,7 @@ function sendPrompt() {
     scrollMessageList()
 
     let context = getContext()
-    chatCompletion(model, context,
+    chatCompletion(context,
         (response) => {
             setAssistantMessage(assistantElement, response)
             scrollMessageList()
@@ -36,18 +31,6 @@ function sendPrompt() {
             prettifyCodeBlocks()
             window.setTimeout(scrollMessageList, 1000)
         })
-}
-
-function isGoogleSearch(model, prompt) {
-    if (model === "google") {
-        searchCompletion(prompt, (searchResult) => {
-            document.getElementById("chat-input").value += "\n\nGoogle Suchergebnisse in JSON formatiert:\n\`\`\`JSON\n" + searchResult + "\n\`\`\`\nBitte fasse die Suchergebnisse auf Deutsch zusammen."
-            setModel("gpt3")
-            sendPrompt()
-        })
-        return true
-    }
-    return false
 }
 
 function addUserMessage(message) {
@@ -207,22 +190,6 @@ function setupDropzone() {
 
 document.getElementById("chat-theme").addEventListener("click", () => {
     toggleTheme()
-})
-
-document.getElementById("chat-model-gpt3").addEventListener("click", () => {
-    setModel("gpt3")
-})
-
-document.getElementById("chat-model-gpt4").addEventListener("click", () => {
-    setModel("gpt4")
-})
-
-document.getElementById("chat-model-dalle").addEventListener("click", () => {
-    setModel("dalle")
-})
-
-document.getElementById("chat-model-google").addEventListener("click", () => {
-    setModel("google")
 })
 
 document.getElementById("chat-submit").addEventListener("click", () => {

@@ -10,7 +10,6 @@ app.use(express.json())
 app.use(express.static(path.join(__dirname, "public")))
 
 const { OpenAIWrapper } = require("./openai")
-const openai = new OpenAIWrapper()
 
 const { UploadWrapper } = require("./upload")
 const upload = new UploadWrapper()
@@ -18,59 +17,20 @@ const upload = new UploadWrapper()
 const { SearchWrapper } = require("./search")
 const search = new SearchWrapper()
 
-const { SecretsWrapper } = require("./secrets")
-const secrets = new SecretsWrapper()
-
 app.get("/", (req, res) => {
-	res.sendFile(path.join(__dirname, "public", "login.html"))
+	res.sendFile(path.join(__dirname, "public", "index.html"))
 })
 
-app.get("/:secret", (req, res) => {
-	let secret = req.params.secret
-	if (!secrets.isSecretValid(secret)) {
-		res.status(401)
-		res.send("Unauthorized")
-		return
-	}
-
-	res.sendFile(path.join(__dirname, "public", "chat.html"))
-})
-
-app.post("/api", (req, res) => {
+app.post("/chat", (req, res) => {
 	let secret = req.body.secret
-	if (!secrets.isSecretValid(secret)) {
-		res.status(401)
-		res.send("Unauthorized")
-		return
-	}
-
-	let model = req.body.model
 	let messages = req.body.messages
 
-	switch (model) {
-		case "gpt3":
-			openai.gpt(res, "gpt-3.5-turbo-1106", messages)
-			break
-		case "gpt4":
-			openai.gpt(res, "gpt-4-1106-preview", messages)
-			break
-		case "dalle":
-			openai.dalle(res, "dall-e-3", messages)
-			break
-		default:
-			res.status(400)
-			res.send("Bad model request.")
-			break
-	}
+	let openaiii = new OpenAIWrapper(secret)
+	openaiii.chat(res, messages)
 })
 
 app.post("/upload", upload.singleFile(), function (req, res, next) {
 	let secret = req.body.secret
-	if (!secrets.isSecretValid(secret)) {
-		res.status(401)
-		res.send("Unauthorized")
-		return
-	}
 
 	if (!req.file) {
 		res.status(400)
@@ -87,11 +47,6 @@ app.post("/upload", upload.singleFile(), function (req, res, next) {
 
 app.post("/search", (req, res) => {
 	let secret = req.body.secret
-	if (!secrets.isSecretValid(secret)) {
-		res.status(401)
-		res.send("Unauthorized")
-		return
-	}
 
 	if (!req.body.query || req.body.query.length < 3) {
 		res.status(400)
@@ -106,7 +61,6 @@ app.post("/search", (req, res) => {
 })
 
 http.listen(process.env.PORT, () => {
-	secrets.createFileIfNotExists()
 	upload.createFolderIfNotExists()
 	console.log(`Server läuft auf *${process.env.PORT}`)
 })

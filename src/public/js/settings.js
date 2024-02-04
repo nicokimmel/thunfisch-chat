@@ -1,6 +1,5 @@
 var defaultChatSettings = {
     "theme": "dark",
-    "model": "gpt3",
     "menu": true,
     "tab": 0,
     "context": {
@@ -15,7 +14,6 @@ function restoreSettings() {
         chatSettings = JSON.parse(localStorage.getItem("chatSettings"))
     }
     setTheme(chatSettings.theme)
-    setModel(chatSettings.model)
     showMenu(chatSettings.menu)
     setContext(chatSettings.context.enabled, chatSettings.context.size)
 }
@@ -45,22 +43,6 @@ function toggleTheme() {
         setTheme("light")
     } else {
         setTheme("dark")
-    }
-}
-
-function setModel(model) {
-    chatSettings.model = model
-    saveSettings()
-
-    let modelSelection = document.getElementsByName("modelselection");
-
-    for (let i = 0; i < modelSelection.length; i++) {
-        if (modelSelection[i].id === "chat-model-" + model) {
-            modelSelection[i].checked = true;
-            break;
-        } else {
-            modelSelection[i].checked = false;
-        }
     }
 }
 

@@ -36,31 +36,15 @@
         <!-- MENU -->
         <div id="chat-left" class="d-flex flex-column gap-3">
 
-            <!-- MODEL -->
+            <!-- SECRET -->
             <div class="card border-0 bg-body-tertiary">
                 <div class="card-body">
                     <div class="card-title d-flex flex-row justify-content-between">
-                        <span>Modell</span>
+                        <span>Schlüssel</span>
                         <i class="bi bi-question-circle-fill" data-bs-toggle="tooltip" data-bs-placement="right"
                             data-bs-title="Wählt das entsprechende Modell aus, an welches die Nachricht geschickt wird."></i>
                     </div>
-                    <div class="btn-group btn-group-sm w-100" role="group">
-                        <input type="radio" class="btn-check" name="modelselection" id="chat-model-gpt3"
-                            autocomplete="off" checked>
-                        <label class="btn btn-outline-primary" for="chat-model-gpt3">GPT-3.5</label>
-
-                        <input type="radio" class="btn-check" name="modelselection" id="chat-model-gpt4"
-                            autocomplete="off">
-                        <label class="btn btn-outline-primary" for="chat-model-gpt4">GPT-4</label>
-
-                        <input type="radio" class="btn-check" name="modelselection" id="chat-model-dalle"
-                            autocomplete="off">
-                        <label class="btn btn-outline-primary" for="chat-model-dalle">DALL-E</label>
-
-                        <input type="radio" class="btn-check" name="modelselection" id="chat-model-google"
-                            autocomplete="off">
-                        <label class="btn btn-outline-primary" for="chat-model-google">Google</label>
-                    </div>
+                    <input type="password" class="form-control" id="secret"></input>
                 </div>
             </div>
 
@@ -68,8 +52,8 @@
             <div class="card border-0 bg-body-tertiary">
                 <div class="card-body d-flex flex-row justify-content-between">
                     <div class="form-check form-switch">
-                        <input id="chat-context" class="form-check-input" type="checkbox" role="switch">
                         <label class="form-check-label" for="chat-context">Kontext</label>
+                        <input id="chat-context" class="form-check-input" type="checkbox" role="switch">
                     </div>
                     <i class="bi bi-question-circle-fill" data-bs-toggle="tooltip" data-bs-placement="right"
                         data-bs-title="Schickt die letzten 5 Nachrichten mit an das Modell um eine Art Kontextverständnis zu erzeugen. Erhöht aber eventuell die verwendeten Tokens enorm."></i>

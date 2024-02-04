@@ -2,23 +2,51 @@ const { OpenAI } = require("openai")
 
 class OpenAIWrapper {
 
-    constructor() {
+    constructor(secret) {
         this.openai = new OpenAI({
-            apiKey: process.env.OPENAI_API_KEY,
-            organization: process.env.OPENAI_ORG_ID
+            apiKey: secret
+            //organization: process.env.OPENAI_ORG_ID
         })
     }
 
-    async gpt(res, version, messages) {
+    async chat(res, messages) {
+        let self = this
         try {
-            const stream = await this.openai.beta.chat.completions.stream({
-                model: version,
+            const stream = await this.openai.beta.chat.completions.runTools({
+                stream: true,
+                model: "gpt-4-turbo-preview",
                 messages: messages,
-                stream: true
+                tools: [
+                    {
+                        type: "function",
+                        function: {
+                            function: async (prompt) => { return await self.image(prompt) },
+                            description: "Create an image with the help of DALL-E.",
+                            parameters: {
+                                type: 'object',
+                                properties: {
+                                    prompt: {
+                                        type: "string",
+                                        description: "The prompt which DALL-E uses to generate the image."
+                                    },
+                                },
+                            },
+                        },
+                    },
+                ],
             })
+
             for await (const chunk of stream) {
-                res.write(chunk.choices[0]?.delta?.content || '')
+                let delta = chunk.choices[0]?.delta
+
+                console.log(delta)
+
+                if (delta.content) {
+                    res.write(chunk.choices[0]?.delta?.content)
+                }
+
             }
+
             res.status(200)
             res.end()
         } catch (error) {
@@ -28,23 +56,23 @@ class OpenAIWrapper {
         }
     }
 
-    async dalle(res, version, messages) {
-        let prompt = messages[messages.length - 1]
+    async image(prompt) {
         try {
             const response = await this.openai.images.generate({
-                model: version,
-                prompt: prompt.content,
+                model: "dall-e-3",
+                prompt: prompt,
                 size: "1024x1024",
                 quality: "standard",
-                response_format: "b64_json"
+                response_format: "url"
             })
-            res.status(400)
-            res.send(`![${prompt.content}](data:image/png;base64,${response.data[0].b64_json})`)
+            console.log("ANGEKOMMEN")
+            console.log(response.data[0].url)
+            return response.data[0].url
         } catch (error) {
-            res.send(`Die Anfrage konnte nicht verarbeitet werden.  
-                \`${error.message}\``)
+            console.log("ERROR")
+            console.log(error.message)
+            return { success: false, reason: error.message }
         }
-
     }
 }
 

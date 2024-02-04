@@ -1,18 +1,10 @@
-function getSecretFromURL() {
-    let url = window.location.href
-    let parts = url.split("/")
-    let secret = parts[parts.length - 1]
-    return secret
-}
-
-function chatCompletion(model, messages, onStream, onComplete) {
+function chatCompletion(messages, onStream, onComplete) {
     let request = new XMLHttpRequest()
 
-    request.open("POST", "/api", true);
+    request.open("POST", "/chat", true);
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
     request.send(JSON.stringify({
-        "secret": getSecretFromURL(),
-        "model": model,
+        "secret": document.getElementById("secret").value,
         "messages": messages
     }))
 
@@ -31,7 +23,7 @@ function searchCompletion(query, onComplete) {
     request.open("POST", "/search", true);
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
     request.send(JSON.stringify({
-        "secret": getSecretFromURL(),
+        "secret": document.getElementById("secret").value,
         "query": query
     }))
 
