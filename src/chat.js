@@ -16,6 +16,9 @@ CLIENT_DEPENDENCIES.forEach((lib) => {
 
 const { OpenAIWrapper } = require("./openai")
 
+const { WhitelistWrapper } = require("./whitelist")
+const whitelist = new WhitelistWrapper()
+
 const { UploadWrapper } = require("./upload")
 const upload = new UploadWrapper()
 
@@ -29,13 +32,20 @@ app.get("/", (req, res) => {
 app.post("/chat", (req, res) => {
 	let secret = req.body.secret
 	let messages = req.body.messages
-
+	
 	let openai = new OpenAIWrapper(secret)
 	openai.chat(res, messages)
 })
 
 app.post("/upload", upload.singleFile(), function (req, res, next) {
 	let secret = req.body.secret
+
+	if (!whitelist.isWhitelisted(secret)) {
+		res.status(403)
+		res.send(`Die Anfrage konnte nicht verarbeitet werden.  
+		\`You are not whitelisted.\``)
+		return
+	}
 
 	res.status(501)
 	res.send("Not implemented yet.")
@@ -57,6 +67,13 @@ app.post("/upload", upload.singleFile(), function (req, res, next) {
 app.post("/search", (req, res) => {
 	let secret = req.body.secret
 
+	if (!whitelist.isWhitelisted(secret)) {
+		res.status(403)
+		res.send(`Die Anfrage konnte nicht verarbeitet werden.  
+		\`You are not whitelisted.\``)
+		return
+	}
+	
 	res.status(501)
 	res.send("Not implemented yet.")
 	return
@@ -75,5 +92,7 @@ app.post("/search", (req, res) => {
 
 http.listen(process.env.PORT, () => {
 	upload.createFolderIfNotExists()
+	whitelist.createFileIfNotExists()
+	whitelist.loadFile()
 	console.log(`Server läuft auf *${process.env.PORT}`)
 })
