@@ -39,7 +39,7 @@ function addUserMessage(message) {
             <i class="bi bi-person-fill"></i>
         </div>
         <div class="message-right p-2">
-            ${message}
+            ${message.replaceAll("\n", "<br>").replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;").replaceAll(" ", "&nbsp;")}
         </div>`
     document.getElementById("message-list").appendChild(userMessage)
     return userMessage
