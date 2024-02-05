@@ -1,5 +1,3 @@
-const markdown = new showdown.Converter({ extensions: ["codehighlight"] })
-
 function sendPrompt() {
     let prompt = document.getElementById("chat-input").value
     let tab = chatSettings.tab
@@ -248,3 +246,5 @@ resizeTextarea()
 setupHighlight()
 setupDropzone()
 setupTooltips()
+
+const markdown = new showdown.Converter({ extensions: ["codehighlight"] })

@@ -1,7 +1,7 @@
 function chatCompletion(messages, onStream, onComplete) {
     let request = new XMLHttpRequest()
 
-    request.open("POST", "/chat", true);
+    request.open("POST", "/chat", true)
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
     request.send(JSON.stringify({
         "secret": document.getElementById("secret").value,
@@ -20,7 +20,7 @@ function chatCompletion(messages, onStream, onComplete) {
 function searchCompletion(query, onComplete) {
     let request = new XMLHttpRequest()
 
-    request.open("POST", "/search", true);
+    request.open("POST", "/search", true)
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
     request.send(JSON.stringify({
         "secret": document.getElementById("secret").value,

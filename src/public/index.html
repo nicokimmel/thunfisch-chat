@@ -14,8 +14,7 @@
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/highlightjs/styles/tomorrow-night-blue.css">
-    
-    <link href="css/chat.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/chat.css">
 </head>
 
 <body class="d-flex flex-column">
@@ -41,7 +40,7 @@
                     <div class="card-title d-flex flex-row justify-content-between">
                         <span>Schlüssel</span>
                         <i class="bi bi-question-circle-fill" data-bs-toggle="tooltip" data-bs-placement="right"
-                            data-bs-title="Wählt das entsprechende Modell aus, an welches die Nachricht geschickt wird."></i>
+                            data-bs-title="Dein API Key von OpenAI. Wird nur lokal auf deinem Gerät gespeichert und vom Server auch nur zur Authentifizierung weitergereicht."></i>
                     </div>
                     <input type="password" class="form-control" id="secret"></input>
                 </div>
@@ -55,7 +54,7 @@
                         <input id="chat-context" class="form-check-input" type="checkbox" role="switch">
                     </div>
                     <i class="bi bi-question-circle-fill" data-bs-toggle="tooltip" data-bs-placement="right"
-                        data-bs-title="Schickt die letzten 5 Nachrichten mit an das Modell um eine Art Kontextverständnis zu erzeugen. Erhöht aber eventuell die verwendeten Tokens enorm."></i>
+                        data-bs-title="Schickt die letzten 10 Nachrichten mit an das Modell um eine Art Kontextverständnis zu erzeugen. Erhöht aber eventuell die verwendeten Tokens enorm."></i>
                 </div>
             </div>
 

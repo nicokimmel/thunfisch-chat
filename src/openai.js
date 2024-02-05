@@ -23,7 +23,7 @@ class OpenAIWrapper {
                             function: async (prompt) => { return await self.image(prompt) },
                             description: "Create an image with the help of DALL-E.",
                             parameters: {
-                                type: 'object',
+                                type: "object",
                                 properties: {
                                     prompt: {
                                         type: "string",
