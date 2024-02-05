@@ -1,3 +1,5 @@
+const markdown = new showdown.Converter({ extensions: ["codehighlight"] })
+
 function sendPrompt() {
     let prompt = document.getElementById("chat-input").value
     let tab = chatSettings.tab
@@ -75,7 +77,7 @@ function setAssistantMessage(messageElement, message) {
         <div class="message-right p-2" markdown="1">
             ${markdown.makeHtml(message)}
         </div>`
-        prettifyPreBlocks(messageElement)
+    prettifyPreBlocks(messageElement)
 }
 
 function addFilesToPrompt() {
@@ -86,12 +88,6 @@ function addFilesToPrompt() {
         }
         clearAttachedFiles()
     }
-}
-
-function convertHtmlToText(html) {
-    return html.replace(/[\u00A0-\u9999<>\&]/gim, function (i) {
-        return "&#" + i.charCodeAt(0) + ";"
-    })
 }
 
 function prettifyPreBlocks(messageElement) {
@@ -158,8 +154,36 @@ function scrollMessageList() {
 }
 
 function setupTooltips() {
-    var tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-    var tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    var tooltipTriggerList = document.querySelectorAll(`[data-bs-toggle="tooltip"]`)
+    var tooltipList = [...tooltipTriggerList].map(tooltipTriggerElement => new bootstrap.Tooltip(tooltipTriggerElement))
+}
+
+function setupHighlight() {
+    showdown.extension("codehighlight", function () {
+        function htmlunencode(text) {
+            return (
+                text
+                    .replace(/&amp;/g, "&")
+                    .replace(/&lt;/g, "<")
+                    .replace(/&gt;/g, ">")
+            )
+        }
+        return [
+            {
+                type: "output",
+                filter: function (text, converter, options) {
+                    var left = "<pre><code\\b[^>]*>",
+                        right = "</code></pre>",
+                        flags = "g",
+                        replacement = function (wholeMatch, match, left, right) {
+                            match = htmlunencode(match)
+                            return left + hljs.highlightAuto(match).value + right
+                        }
+                    return showdown.helper.replaceRecursiveRegExp(text, replacement, left, right, flags)
+                }
+            }
+        ]
+    })
 }
 
 function setupDropzone() {
@@ -219,9 +243,8 @@ document.getElementById("chat-context").addEventListener("change", function (eve
     setContext(this.checked, chatSettings.context.size)
 })
 
-var markdown = new showdown.Converter()
-
 resizeTextarea()
 
+setupHighlight()
 setupDropzone()
 setupTooltips()

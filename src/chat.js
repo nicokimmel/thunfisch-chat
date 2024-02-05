@@ -9,6 +9,11 @@ const http = require("http").Server(app)
 app.use(express.json())
 app.use(express.static(path.join(__dirname, "public")))
 
+const CLIENT_DEPENDENCIES = ["bootstrap", "bootstrap-icons", "showdown", "highlightjs", "dropzone"]
+CLIENT_DEPENDENCIES.forEach((lib) => {
+	app.use(`/${lib}`, express.static(path.join(__dirname, `../node_modules/${lib}`)))
+})
+
 const { OpenAIWrapper } = require("./openai")
 
 const { UploadWrapper } = require("./upload")
@@ -35,7 +40,7 @@ app.post("/upload", upload.singleFile(), function (req, res, next) {
 	res.status(501)
 	res.send("Not implemented yet.")
 	return
-	
+
 	if (!req.file) {
 		res.status(400)
 		res.send("No file uploaded.")
@@ -55,7 +60,7 @@ app.post("/search", (req, res) => {
 	res.status(501)
 	res.send("Not implemented yet.")
 	return
-	
+
 	if (!req.body.query || req.body.query.length < 3) {
 		res.status(400)
 		res.send("Bad query request. Queries must be at least 3 characters long.")

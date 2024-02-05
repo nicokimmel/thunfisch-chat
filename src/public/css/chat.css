@@ -28,7 +28,7 @@ pre code {
 }
 
 pre {
-    width: 60vw;
+    max-width: 80%;
 }
 
 img {
@@ -51,6 +51,9 @@ img {
 
 @media screen and (max-width: 992px) {
     #chat-left {
+        width: 100%;
+    }
+    #chat-right {
         width: 100%;
     }
 }
