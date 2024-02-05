@@ -36,6 +36,12 @@ class OpenAIWrapper {
                 ],
             })
 
+            stream.on("error", (error) => {
+                res.write(`Die Anfrage konnte nicht verarbeitet werden.  
+                    \`${error.message}\``)
+                res.end()
+            })
+
             for await (const chunk of stream) {
                 let delta = chunk.choices[0]?.delta
                 if (delta.content) {
@@ -45,6 +51,7 @@ class OpenAIWrapper {
 
             res.status(200)
             res.end()
+            
         } catch (error) {
             res.write(`Die Anfrage konnte nicht verarbeitet werden.  
                 \`${error.message}\``)
