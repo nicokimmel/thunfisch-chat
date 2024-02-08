@@ -24,11 +24,11 @@ textarea:active {
 
 pre code {
     padding: 5px;
-    overflow: scroll;
+    overflow: auto;
 }
 
 pre {
-    max-width: 75vw;
+    max-width: 60vw;
 }
 
 img {
