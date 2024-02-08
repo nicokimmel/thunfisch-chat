@@ -45,7 +45,7 @@ function addUserMessage(message) {
                 .replaceAll("&", "&amp;")
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")}
-        </div>`/
+        </div>`
     document.getElementById("message-list").appendChild(userMessage)
     return userMessage
 }
