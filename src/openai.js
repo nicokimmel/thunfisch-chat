@@ -20,7 +20,8 @@ class OpenAIWrapper {
                     {
                         type: "function",
                         function: {
-                            function: async (prompt) => { return await self.image(prompt) },
+                            name: "image",
+                            function: async function image(prompt) { return await self.image(prompt) },
                             description: "Create an image with the help of DALL-E.",
                             parameters: {
                                 type: "object",
@@ -51,7 +52,7 @@ class OpenAIWrapper {
 
             res.status(200)
             res.end()
-            
+
         } catch (error) {
             res.write(`Die Anfrage konnte nicht verarbeitet werden.  
                 \`${error.message}\``)

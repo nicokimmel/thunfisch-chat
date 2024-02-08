@@ -42,7 +42,8 @@
                         <i class="bi bi-question-circle-fill" data-bs-toggle="tooltip" data-bs-placement="right"
                             data-bs-title="Dein API Key von OpenAI. Wird nur lokal auf deinem Gerät gespeichert und vom Server auch nur zur Authentifizierung weitergereicht."></i>
                     </div>
-                    <input type="password" class="form-control" id="secret"></input>
+                    <input type="password" class="form-control" id="secret"
+                        placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"></input>
                 </div>
             </div>
 
@@ -58,6 +59,23 @@
                 </div>
             </div>
 
+            <!-- PROMPTS -->
+            <div class="card border-0 bg-body-tertiary">
+                <div class="card-body">
+                    <div class="card-title d-flex flex-row justify-content-between">
+                        <span>Bibliothek</span>
+                        <i class="bi bi-question-circle-fill" data-bs-toggle="tooltip" data-bs-placement="right"
+                            data-bs-title="todo"></i>
+                    </div>
+                    <span class="badge rounded-pill text-bg-primary px-3">Apfel</span>
+                    <span class="badge rounded-pill text-bg-primary px-3">Banane</span>
+                    <span class="badge rounded-pill text-bg-primary px-3">Kirsche</span>
+                    <span class="badge rounded-pill text-bg-primary px-3">Kiwi</span>
+                    <span class="badge rounded-pill text-bg-primary px-3">Traube</span>
+                    <span class="badge rounded-pill text-bg-primary px-3">Tomate</span>
+                </div>
+            </div>
+
             <!-- TABS -->
             <div class="card border-0 bg-body-tertiary">
                 <div class="card-body">
@@ -67,7 +85,7 @@
                             data-bs-title="Zeigt eine Liste aller aktiven Chats. Wenn ein neuer Chat erstellt wird taucht dieser erst in der Liste auf sobald eine Konversation entstanden ist."></i>
                     </div>
                     <div id="tab-list" class="list-group"> </div>
-                    <button id="tab-new" type="button" class="btn btn-primary btn-sm mt-2"><i class="bi bi-plus"></i>
+                    <button id="tab-new" type="button" class="btn btn-secondary btn-sm mt-2"><i class="bi bi-plus"></i>
                         Neuer Chat</button>
                 </div>
             </div>
