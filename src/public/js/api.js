@@ -10,6 +10,7 @@ function chatCompletion(messages, onStream, onComplete) {
 
     request.onprogress = function () {
         onStream(request.responseText)
+        console.log(request.responseText)
     }
 
     request.onload = function () {

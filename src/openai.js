@@ -69,7 +69,7 @@ class OpenAIWrapper {
                 quality: "standard",
                 response_format: "url"
             })
-            return { success: true, system: "Please format the url in Markdown and include it into your answer. The prompt should be the alt text in brackets.", url: response.data[0].url, prompt: prompt }
+            return { success: true, system: "Format the url in Markdown and include it into your answer. The prompt should be the alt text in brackets. Also remind the user that the link will expire in 1 hour.", url: response.data[0].url, prompt: prompt }
         } catch (error) {
             return { success: false, system: `An error happened. Please include this message into your answer: ${error.message}` }
         }
