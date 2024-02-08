@@ -25,6 +25,10 @@ const upload = new UploadWrapper()
 const { SearchWrapper } = require("./search")
 const search = new SearchWrapper()
 
+app.get("/favicon.ico", (req, res) => {
+	res.sendFile(path.join(__dirname, "public", "img", "tuna_chat.ico"))
+})
+
 app.get("/", (req, res) => {
 	res.sendFile(path.join(__dirname, "public", "index.html"))
 })
