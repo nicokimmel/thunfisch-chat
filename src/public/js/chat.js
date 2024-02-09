@@ -1,5 +1,4 @@
-function sendPrompt() {
-    let prompt = document.getElementById("chat-input").value
+function sendPrompt(prompt) {
     let tab = chatSettings.tab
 
     if (prompt === "") {
@@ -38,14 +37,7 @@ function addUserMessage(message) {
         <div class="message-left p-2 fs-3">
             <i class="bi bi-person-fill"></i>
         </div>
-        <div class="message-right p-2">
-            ${message
-            .replaceAll("\n", "<br>")
-            .replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;")
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")}
-        </div>`
+        <div class="message-right p-2">${message.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")}</div>`
     document.getElementById("message-list").appendChild(userMessage)
     return userMessage
 }
@@ -219,13 +211,15 @@ document.getElementById("chat-theme").addEventListener("click", () => {
 })
 
 document.getElementById("chat-submit").addEventListener("click", () => {
-    sendPrompt()
+    let prompt = document.getElementById("chat-input").value
+    sendPrompt(prompt)
 })
 
 document.getElementById("chat-input").addEventListener("keypress", function (event) {
     if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault()
-        sendPrompt()
+        let prompt = document.getElementById("chat-input").value
+        sendPrompt(prompt)
         return
     }
 })

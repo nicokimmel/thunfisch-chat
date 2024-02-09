@@ -17,6 +17,10 @@ textarea:active {
     border-radius: var(--bs-border-radius) !important;
 }
 
+.message-user .message-right {
+    white-space: pre-wrap;
+}
+
 .message-assistant pre {
     background-color: var(--bs-tertiary-bg) !important;
     border-radius: var(--bs-border-radius) !important;
