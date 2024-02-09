@@ -12,8 +12,10 @@ function loadPrompts() {
     for (const prompt in PROMPT_LIST) {
         const promptElement = document.createElement("span")
         promptElement.classList.add("badge", "rounded-pill", "text-bg-primary")
-        promptElement.setAttribute("role", "button")
+        promptElement.style.fontWeight = "normal"
+        promptElement.style.padding = "6px 12px 6px 12px" 
         promptElement.innerText = prompt
+        promptElement.setAttribute("role", "button")
         promptElement.addEventListener("click", () => {
             newChat()
             sendPrompt(PROMPT_LIST[prompt])
