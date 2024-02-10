@@ -17,7 +17,7 @@ function restoreTabList() {
         historyItem.classList.add("list-group", "list-group-horizontal")
         historyItem.innerHTML = `
             <li class="list-group-item list-group-item-action ${chatSettings.tab === index ? "active" : ""}"
-                onclick="loadHistory(${index})">${chat[0]?.content || "Unbenannt"}</li>
+                onclick="loadHistory(${index})">${chat[0]?.content.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") || "Unbenannt"}</li>
             <li class="list-group-item list-group-item-action list-group-item-delete ${chatSettings.tab === index ? "active" : ""}"
                 onclick="removeChat(${index})"><i class="bi bi-trash-fill"></i></li>`
         historyList.appendChild(historyItem)

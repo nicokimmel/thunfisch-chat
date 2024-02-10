@@ -30,11 +30,20 @@ class OpenAIWrapper {
                                         type: "string",
                                         description: "The prompt which DALL-E uses to generate the image."
                                     },
+                                    size: {
+                                        type: "string",
+                                        description: "The size of the generated images. Must be one of \"1024x1024\", \"1792x1024\", or \"1024x1792\". Defaults to \"1024x1024\". If the user refers to a widescreen or wallpaper image, the \"1792x1024\" size should be used."
+                                    },
+                                    quality: {
+                                        type: "string",
+                                        description: "The quality of the image that will be generated. Must be either \"standard\" or \"hd\". Defaults to \"standard\". Do not use \"hd\" unless the user says they want a high-resolution image."
+                                    }
                                 },
-                            },
-                        },
-                    },
-                ],
+                                required: ["prompt"]
+                            }
+                        }
+                    }
+                ]
             })
 
             stream.on("error", (error) => {
@@ -60,18 +69,41 @@ class OpenAIWrapper {
         }
     }
 
-    async image(prompt) {
+    async image(parameters) {
         try {
+            parameters = JSON.parse(parameters)
+            
+            const validSizes = ["1792x1024", "1024x1792", "1024x1024"]
+            if (!validSizes.includes(parameters.size)) {
+                parameters.size = "1024x1024"
+            }
+
+            const validQualities = ["standard", "hd"]
+            if (!validQualities.includes(parameters.quality)) {
+                parameters.quality = "standard"
+            }
+
+            console.log(`prompt: ${parameters.prompt}, size: ${parameters.size}, quality: ${parameters.quality}`)
+
             const response = await this.openai.images.generate({
                 model: "dall-e-3",
-                prompt: prompt,
-                size: "1024x1024",
-                quality: "standard",
+                prompt: parameters.prompt,
+                size: parameters.size,
+                quality: parameters.quality,
                 response_format: "url"
             })
-            return { success: true, system: "Format the url in Markdown and include it into your answer. The prompt should be the alt text in brackets. Also remind the user that the link will expire in 1 hour.", url: response.data[0].url, prompt: prompt }
+            
+            return {
+                success: true,
+                system: "Format the URL in Markdown and include it into your answer. The prompt should be the alt text in brackets. Also remind the user that the link will expire in 1 hour.",
+                url: response.data[0].url,
+                prompt: parameters.prompt
+            }
         } catch (error) {
-            return { success: false, system: `An error happened. Please include this message into your answer: ${error.message}` }
+            return {
+                success: false,
+                system: `An error happened. Please include this message into your answer: ${error.message}`
+            }
         }
     }
 }

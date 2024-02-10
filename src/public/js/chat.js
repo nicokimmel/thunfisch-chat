@@ -154,7 +154,7 @@ function setupTooltips() {
 }
 
 function setupHighlight() {
-    showdown.extension("codehighlight", function () {
+    /*showdown.extension("codehighlight", function () {
         function htmlunencode(text) {
             return (
                 text
@@ -178,7 +178,50 @@ function setupHighlight() {
                 }
             }
         ]
+    })*/
+
+    showdown.extension("codehighlight", function () {
+        function htmlunencode(text) {
+            return (
+                text
+                    .replace(/&amp;/g, "&")
+                    .replace(/</g, "<")
+                    .replace(/>/g, ">")
+            );
+        }
+        return [
+            {
+                type: "output",
+                filter: function (text, converter, options) {
+                    // Suche nach <code> Blöcken mit einer "language-*" Klasse
+                    var left = "<pre><code\\b[^>]*class=\"[^\"]*language-([^\"]*)[^\"]*\">",
+                        right = "</code></pre>",
+                        flags = "g",
+                        replacement = function (wholeMatch, match, left, right) {
+                            var matchStart = wholeMatch.indexOf(match),
+                                tagLeft = wholeMatch.substring(0, matchStart),
+                                tagRight = wholeMatch.substring(matchStart + match.length),
+                                languageClassMatchResult = tagLeft.match(/class=\"[^\"]*language-([^\"]*)[^\"]*\"/);
+
+                            // Extrahiere die Klasse, die auf "language-" folgt, um die Sprache zu identifizieren
+                            var language = languageClassMatchResult ? languageClassMatchResult[1] : "plaintext";
+
+                            // Entschlüsselung der HTML-Entities im match
+                            match = htmlunencode(match);
+
+                            // Hervorhebung unter der Annahme der identifizierten Sprache
+                            var highlighted = hljs.highlightAuto(match, [language]).value;
+
+                            return left + highlighted + right;
+                        };
+
+                    // ersetze rekursiv und wende Highlighting nur auf die passenden <code> Blöcke an
+                    return showdown.helper.replaceRecursiveRegExp(text, replacement, left, right, flags);
+                }
+            }
+        ];
     })
+
 }
 
 function setupDropzone() {
