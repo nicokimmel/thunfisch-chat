@@ -4,15 +4,15 @@ var defaultChatSettings = {
     "tab": 0,
     "context": {
         "enabled": true,
-        "size": 10
+        "size": 25
     },
     "secret": ""
 }
 var chatSettings = defaultChatSettings
 
 function restoreSettings() {
-    if (localStorage.getItem("chatSettings")) {
-        chatSettings = JSON.parse(localStorage.getItem("chatSettings"))
+    if (localStorage.getItem("settings")) {
+        chatSettings = JSON.parse(localStorage.getItem("settings"))
     }
     setTheme(chatSettings.theme)
     showMenu(chatSettings.menu)
@@ -21,7 +21,7 @@ function restoreSettings() {
 }
 
 function saveSettings() {
-    localStorage.setItem("chatSettings", JSON.stringify(chatSettings))
+    localStorage.setItem("settings", JSON.stringify(chatSettings))
 }
 
 function toggleMenu() {

@@ -1,8 +1,8 @@
 var chatHistory = []
 
 function restoreHistory() {
-    if (localStorage.getItem("chatHistory")) {
-        chatHistory = JSON.parse(localStorage.getItem("chatHistory"))
+    if (localStorage.getItem("history")) {
+        chatHistory = JSON.parse(localStorage.getItem("history"))
     } else {
         newChat()
     }
@@ -17,7 +17,7 @@ function restoreTabList() {
         historyItem.classList.add("list-group", "list-group-horizontal")
         historyItem.innerHTML = `
             <li class="list-group-item list-group-item-action ${chatSettings.tab === index ? "active" : ""}"
-                onclick="loadHistory(${index})">${chat[0]?.content.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") || "Unbenannt"}</li>
+                onclick="loadHistory(${index})">${chat.title}</li>
             <li class="list-group-item list-group-item-action list-group-item-delete ${chatSettings.tab === index ? "active" : ""}"
                 onclick="removeChat(${index})"><i class="bi bi-trash-fill"></i></li>`
         historyList.appendChild(historyItem)
@@ -25,7 +25,7 @@ function restoreTabList() {
 }
 
 function saveHistory() {
-    localStorage.setItem("chatHistory", JSON.stringify(chatHistory))
+    localStorage.setItem("history", JSON.stringify(chatHistory))
 }
 
 function loadHistory(index) {
@@ -36,8 +36,8 @@ function loadHistory(index) {
     let messageList = document.getElementById("message-list")
     messageList.innerHTML = ""
 
-    let chat = chatHistory[index]
-    chat.forEach(message => {
+    let messages = chatHistory[index].messages
+    messages.forEach(message => {
         if (message.role === "user") {
             addUserMessage(message.content)
         } else if (message.role === "assistant") {
@@ -75,7 +75,10 @@ function removeChat(index) {
 
 function newChat() {
     let index = chatHistory.length
-    chatHistory.push([])
+    chatHistory.push({
+        title: "Unbenannt",
+        messages: []
+    })
     chatSettings.tab = index
     saveSettings()
     saveHistory()
@@ -87,7 +90,7 @@ function getContext() {
     if (chatSettings.context.enabled) {
         count = chatSettings.context.size
     }
-    return chatHistory[chatSettings.tab].slice(-count)
+    return chatHistory[chatSettings.tab].messages.slice(-count)
 }
 
 restoreHistory()

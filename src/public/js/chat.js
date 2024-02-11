@@ -10,9 +10,23 @@ function sendPrompt(prompt) {
     addFilesToPrompt()
 
     addUserMessage(prompt)
-    chatHistory[tab].push({ role: "user", content: prompt })
+    chatHistory[tab].messages.push({ role: "user", content: prompt })
 
-    restoreTabList()
+    if (chatHistory[tab].title === "Unbenannt") {
+        chatCompletion(
+            [{
+                role: "user",
+                content: "Schreibe eine simple Zusammenfassung mit maximal 5 Wörtern für die unten stehende Anfrage. Antworte nur mit der Zusammenfassung und bearbeite nicht die Anfrage selbst.\n\n" + prompt
+            }],
+            (response) => {
+                chatHistory[tab].title = response
+                restoreTabList()
+            },
+            (finalResponse) => {
+                chatHistory[tab].title = finalResponse
+                restoreTabList()
+            })
+    }
 
     let assistantElement = addAssistantMessage()
     scrollMessageList()
@@ -24,7 +38,7 @@ function sendPrompt(prompt) {
             scrollMessageList()
         },
         (finalResponse) => {
-            chatHistory[tab].push({ role: "assistant", content: finalResponse })
+            chatHistory[tab].messages.push({ role: "assistant", content: finalResponse })
             saveHistory()
             window.setTimeout(scrollMessageList, 1000)
         })
