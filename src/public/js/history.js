@@ -43,6 +43,9 @@ function loadHistory(index) {
         } else if (message.role === "assistant") {
             let assistantElement = addAssistantMessage()
             setAssistantMessage(assistantElement, message.content)
+        } else if (message.role === "system") {
+            let filenames = getFilenamesFromMessage(message.content)
+            addSystemMessage(filenames)
         }
     })
     
@@ -88,6 +91,17 @@ function newChat() {
 function getContext() {
     let count = chatSettings.context ? chatHistory[chatSettings.tab].messages.length : 1
     return chatHistory[chatSettings.tab].messages.slice(-count)
+}
+
+function getFilenamesFromMessage(message) {
+    const regex = /^Datei (\S+):$/gm
+    let filenames = "\`\`\`Anhang"
+    let match
+    while ((match = regex.exec(message)) !== null) {
+        filenames += `\n${match[1]}`
+    }
+    filenames += "\n\`\`\`\n\n"
+    return filenames.trim()
 }
 
 restoreHistory()

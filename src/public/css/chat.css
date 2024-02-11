@@ -26,6 +26,11 @@ textarea:active {
     border-radius: var(--bs-border-radius) !important;
 }
 
+.message-system pre {
+    background-color: var(--bs-tertiary-bg) !important;
+    border-radius: var(--bs-border-radius) !important;
+}
+
 pre code {
     padding: 5px;
     overflow: auto;
@@ -58,6 +63,7 @@ img {
 @media screen and (max-width: 992px) {
     #chat-left {
         width: 100%;
+        overflow-y: visible;
     }
     #chat-right {
         width: 100%;

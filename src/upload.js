@@ -5,10 +5,11 @@ const fs = require("fs")
 
 class UploadWrapper {
 
-    constructor() {
+    constructor(whitelist) {
+        this.whitelist = whitelist
         const storage = multer.diskStorage({
             destination: function (req, file, callback) {
-                callback(null, path.join(__dirname, "uploads"))
+                callback(null, "./uploads")
             },
             filename: function (req, file, callback) {
                 const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9)
@@ -17,6 +18,13 @@ class UploadWrapper {
         })
 
         const fileFilter = function (req, file, callback) {
+            
+            let secret = req.body.secret
+            if (!whitelist.isWhitelisted(secret)) {
+                callback(null, false)
+                return
+            }
+            
             callback(null, true)
             /*
             if (file.mimetype.startsWith("image/") || file.mimetype === "application/pdf") {

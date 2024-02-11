@@ -7,7 +7,16 @@ function sendPrompt(prompt) {
 
     clearTextarea()
 
-    addFilesToPrompt()
+    if (Object.keys(attachedFiles).length > 0) {
+        let message = "Dateiuploads:"
+        for (let filename in attachedFiles) {
+            message += `\n\nDatei ${filename}:\n`
+            message += `\`\`\`\n${attachedFiles[filename]}\n\`\`\``
+        }
+        addSystemMessage(getFilenamesFromMessage(message))
+        chatHistory[tab].messages.push({ role: "system", content: message })
+        clearAttachedFiles()
+    }
 
     addUserMessage(prompt)
     chatHistory[tab].messages.push({ role: "user", content: prompt })
@@ -58,7 +67,7 @@ function addUserMessage(message) {
 
 function addAssistantMessage() {
     let assistantMessage = document.createElement("div")
-    assistantMessage.classList.add("message-assistant", "d-flex", "flex-row", "bg-dark-subtle", "p-3", "rounded")
+    assistantMessage.classList.add("message-assistant", "d-flex", "flex-row", "p-3", "bg-dark-subtle", "rounded")
     assistantMessage.innerHTML = `
         <div class="message-left p-2 fs-3">
             <i class="bi bi-cpu-fill"></i>
@@ -89,14 +98,17 @@ function setAssistantMessage(messageElement, message) {
     prettifyPreBlocks(messageElement)
 }
 
-function addFilesToPrompt() {
-    if (Object.keys(attachedFiles).length > 0) {
-        for (let filename in attachedFiles) {
-            prompt += `\n\n${filename}:\n`
-            prompt += `\`\`\`\n${attachedFiles[filename]}\`\`\``
-        }
-        clearAttachedFiles()
-    }
+function addSystemMessage(message) {
+    let systemMessage = document.createElement("div")
+    systemMessage.classList.add("message-system", "d-flex", "flex-row", "p-3", "mt-3", "bg-body-secondary", "rounded")
+    systemMessage.innerHTML = `
+        <div class="message-left p-2 fs-3">
+            <i class="bi bi-cloud-fill"></i>
+        </div>
+        <div class="message-right p-2">${markdown.makeHtml(message)}</div>`
+    document.getElementById("message-list").appendChild(systemMessage)
+    prettifyPreBlocks(systemMessage)
+    return systemMessage
 }
 
 function prettifyPreBlocks(messageElement) {
@@ -148,7 +160,8 @@ function clearTextarea() {
 
 function resizeTextarea() {
     let textarea = document.getElementById("chat-input")
-    textarea.style.overflow = "hidden"
+    textarea.style.overflowX = "hidden"
+    textarea.style.overflowY = "auto"
     textarea.style.height = 0
     if (textarea.scrollHeight < 200) {
         textarea.style.height = textarea.scrollHeight + "px"
@@ -243,15 +256,14 @@ function setupDropzone() {
     var dropzone = new Dropzone("#chat-input", {
         url: "/upload",
         paramName: "file",
-        params: {
-            secret: chatSettings.secret
-        },
         clickable: false,
         previewsContainer: false,
         acceptedFiles: ".doc,.docx,.dot,.pdf,.csv,.txt,.xls,.xlsx",
-        maxFilesize: 5,
-        dictDefaultMessage: "Datei hier ablegen",
+        maxFilesize: 1,
         init: function () {
+            this.on("sending", function (file, xhr, data) {
+                data.append("secret", chatSettings.secret)
+            })
             this.on("success", function (file, content) {
                 addAttachedFile(file.name, content)
             })
