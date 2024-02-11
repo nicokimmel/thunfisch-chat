@@ -86,10 +86,7 @@ function newChat() {
 }
 
 function getContext() {
-    let count = 1
-    if (chatSettings.context.enabled) {
-        count = chatSettings.context.size
-    }
+    let count = chatSettings.context ? chatHistory[chatSettings.tab].messages.length : 1
     return chatHistory[chatSettings.tab].messages.slice(-count)
 }
 

@@ -2,10 +2,7 @@ var defaultChatSettings = {
     "theme": "dark",
     "menu": true,
     "tab": 0,
-    "context": {
-        "enabled": true,
-        "size": 25
-    },
+    "context": false,
     "secret": ""
 }
 var chatSettings = defaultChatSettings
