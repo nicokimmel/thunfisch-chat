@@ -4,7 +4,8 @@ function chatCompletion(messages, onStream, onComplete) {
     request.open("POST", "/chat", true)
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
     request.send(JSON.stringify({
-        "secret": document.getElementById("secret").value,
+        "secret": chatSettings.secret,
+        "model": chatSettings.model,
         "messages": messages
     }))
 
@@ -24,7 +25,8 @@ function searchCompletion(query, onComplete) {
     request.open("POST", "/search", true)
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
     request.send(JSON.stringify({
-        "secret": document.getElementById("secret").value,
+        "secret": chatSettings.secret,
+        "model": chatSettings.model,
         "query": query
     }))
 

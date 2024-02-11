@@ -2,6 +2,7 @@ var defaultChatSettings = {
     "theme": "dark",
     "menu": true,
     "tab": 0,
+    "model": "gpt-4-turbo-preview",
     "context": false,
     "secret": ""
 }
@@ -13,8 +14,9 @@ function restoreSettings() {
     }
     setTheme(chatSettings.theme)
     showMenu(chatSettings.menu)
-    setContext(chatSettings.context.enabled, chatSettings.context.size)
+    setContext(chatSettings.context)
     setSecret(chatSettings.secret)
+    setModel(chatSettings.model)
 }
 
 function saveSettings() {
@@ -57,9 +59,8 @@ function showMenu(shown) {
     saveSettings()
 }
 
-function setContext(enabled, size) {
-    chatSettings.context.enabled = enabled
-    chatSettings.context.size = size
+function setContext(enabled) {
+    chatSettings.context = enabled
     saveSettings()
 
     document.getElementById("chat-context").checked = enabled
@@ -68,6 +69,12 @@ function setContext(enabled, size) {
 function setSecret(secret) {
     chatSettings.secret = secret
     document.getElementById("secret").value = secret
+    saveSettings()
+}
+
+function setModel(model) {
+    chatSettings.model = model
+    document.getElementById("model-selection").value = model
     saveSettings()
 }
 

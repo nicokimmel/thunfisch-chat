@@ -52,6 +52,7 @@ img {
 
 #chat-left {
     width: 300px;
+    overflow-y: auto;
 }
 
 @media screen and (max-width: 992px) {

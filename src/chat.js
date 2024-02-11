@@ -35,10 +35,11 @@ app.get("/", (req, res) => {
 
 app.post("/chat", (req, res) => {
 	let secret = req.body.secret
+	let model = req.body.model
 	let messages = req.body.messages
 	
 	let openai = new OpenAIWrapper(secret)
-	openai.chat(res, messages)
+	openai.chat(res, model, messages)
 })
 
 app.post("/upload", upload.singleFile(), function (req, res, next) {

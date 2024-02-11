@@ -5,16 +5,15 @@ class OpenAIWrapper {
     constructor(secret) {
         this.openai = new OpenAI({
             apiKey: secret
-            //organization: process.env.OPENAI_ORG_ID
         })
     }
 
-    async chat(res, messages) {
+    async chat(res, model, messages) {
         let self = this
         try {
             const stream = await this.openai.beta.chat.completions.runTools({
                 stream: true,
-                model: "gpt-4-turbo-preview",
+                model: model,
                 messages: messages,
                 tools: [
                     {
@@ -22,7 +21,7 @@ class OpenAIWrapper {
                         function: {
                             name: "image",
                             function: async function image(prompt) { return await self.image(prompt) },
-                            description: "Create an image with the help of DALL-E.",
+                            description: "Create an image with the help of DALL-E. Do not use it unless the user uses words like \"create image\" or \"DALL-E\".",
                             parameters: {
                                 type: "object",
                                 properties: {
@@ -72,7 +71,7 @@ class OpenAIWrapper {
     async image(parameters) {
         try {
             parameters = JSON.parse(parameters)
-            
+
             const validSizes = ["1792x1024", "1024x1792", "1024x1024"]
             if (!validSizes.includes(parameters.size)) {
                 parameters.size = "1024x1024"
@@ -83,8 +82,6 @@ class OpenAIWrapper {
                 parameters.quality = "standard"
             }
 
-            console.log(`prompt: ${parameters.prompt}, size: ${parameters.size}, quality: ${parameters.quality}`)
-
             const response = await this.openai.images.generate({
                 model: "dall-e-3",
                 prompt: parameters.prompt,
@@ -92,7 +89,7 @@ class OpenAIWrapper {
                 quality: parameters.quality,
                 response_format: "url"
             })
-            
+
             return {
                 success: true,
                 system: "Format the URL in Markdown and include it into your answer. The prompt should be the alt text in brackets. Also remind the user that the link will expire in 1 hour.",

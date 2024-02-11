@@ -25,7 +25,7 @@
         <span>Thunfisch <span class="badge bg-primary">CHAT</span></span>
         <span class="flex-fill"></span>
         <a href="https://platform.openai.com/usage" target="_blank" role="button" class="btn fs-4"><i
-            class="bi bi-cash"></i></a>
+                class="bi bi-cash"></i></a>
         <button id="chat-theme" type="button" class="btn fs-4"><i class="bi bi-sun-fill"></i></button>
     </div>
 
@@ -43,8 +43,23 @@
                         <i class="bi bi-question-circle-fill" data-bs-toggle="tooltip" data-bs-placement="right"
                             data-bs-title="Dein API Key von OpenAI. Wird lokal auf deinem Gerät gespeichert und vom Server nur zur Authentifizierung weitergereicht."></i>
                     </div>
-                    <input type="password" class="form-control" id="secret"
+                    <input id="secret" type="password" class="form-control"
                         placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"></input>
+                </div>
+            </div>
+
+            <!-- MODEL -->
+            <div class="card border-0 bg-body-tertiary">
+                <div class="card-body">
+                    <div class="card-title d-flex flex-row justify-content-between">
+                        <span>Modell</span>
+                        <i class="bi bi-question-circle-fill" data-bs-toggle="tooltip" data-bs-placement="right"
+                            data-bs-title="todo"></i>
+                    </div>
+                    <select id="model-selection" class="form-select">
+                        <option value="gpt-4-turbo-preview">gpt-4-turbo-preview</option>
+                        <option value="gpt-3.5-turbo-0125">gpt-3.5-turbo-0125</option>
+                    </select>
                 </div>
             </div>
 

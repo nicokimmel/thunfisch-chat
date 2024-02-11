@@ -294,7 +294,11 @@ document.getElementById("tab-new").addEventListener("click", function (event) {
 })
 
 document.getElementById("chat-context").addEventListener("change", function (event) {
-    setContext(this.checked, chatSettings.context.size)
+    setContext(this.checked)
+})
+
+document.getElementById("model-selection").addEventListener("change", function (event) {
+    setModel(this.value)
 })
 
 resizeTextarea()
