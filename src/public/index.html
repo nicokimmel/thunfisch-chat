@@ -110,14 +110,18 @@
             <div id="message-list" class="container mb-4 overflow-auto"></div>
 
             <!-- INPUT -->
-            <div class="container d-flex flex-row mt-auto">
-                <textarea id="chat-input" class="form-control" placeholder="Nachricht"></textarea>
-                <button id="chat-submit" class="btn btn-primary ms-2" type="button"><i
+            <div class="container mt-auto d-flex flex-column form-control p-3 gap-2">
+                <textarea id="chat-input" class="border border-0 bg-transparent" placeholder="Nachricht"></textarea>
+                <div class="d-flex flex-row gap-2">
+                    <button id="chat-file-upload" class="btn btn-secondary btn-sm" type="button"><i
+                        class="bi bi-paperclip"></i></button>
+                    <input type="file" id="chat-file-upload-input" class="d-none" multiple>
+                    <div id="chat-file-list" class="flex-grow-1 d-flex flex-row flex-wrap gap-2"></div>
+                    <button id="chat-submit" class="btn btn-primary btn-sm" type="button"><i
                         class="bi bi-send-fill"></i></button>
+                </div>
+                
             </div>
-
-            <!-- FILES -->
-            <div id="file-list" class="container d-flex flex-row flex-wrap gap-2 mt-2"></div>
         </div>
 
     </div>
@@ -127,7 +131,8 @@
     <script src="/showdown/dist/showdown.min.js"></script>
     <script src="/highlightjs/highlight.pack.js"></script>
     <script src="/dropzone/dist/dropzone-min.js"></script>
-
+    <script src="js/libs/docsToText/docToText.js"></script>
+    
     <script src="js/pwa.js"></script>
     <script src="js/settings.js"></script>
     <script src="js/api.js"></script>

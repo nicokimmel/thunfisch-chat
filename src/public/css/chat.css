@@ -48,26 +48,38 @@ img {
 }
 
 #header {
-    height: 66px;
+    height: 42px;
 }
 
 #chat {
-    height: calc(100% - 66px);
+    height: calc(100% - 42px);
 }
 
 #chat-left {
     width: 300px;
+    min-width: 300px;
+    max-width: 300px;
     overflow-y: auto;
 }
 
 @media screen and (max-width: 992px) {
     #chat-left {
         width: 100%;
+        min-width: 100%;
+        max-width: 100%;
         overflow-y: visible;
     }
     #chat-right {
         width: 100%;
     }
+}
+
+#chat-input {
+    resize: none;
+}
+
+#chat-file-list .input-group {
+    width: auto;
 }
 
 .list-group-item {
@@ -85,8 +97,4 @@ img {
     line-height: 42px;
     border-left: none;
     border-right: var(--bs-list-group-border-width) solid var(--bs-list-group-border-color);
-}
-
-#file-list .input-group {
-    width: auto;
 }

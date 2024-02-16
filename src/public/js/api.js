@@ -18,19 +18,3 @@ function chatCompletion(messages, onStream, onComplete) {
         onComplete(request.responseText)
     }
 }
-
-function searchCompletion(query, onComplete) {
-    let request = new XMLHttpRequest()
-
-    request.open("POST", "/search", true)
-    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
-    request.send(JSON.stringify({
-        "secret": chatSettings.secret,
-        "model": chatSettings.model,
-        "query": query
-    }))
-
-    request.onload = function () {
-        onComplete(request.responseText)
-    }
-}

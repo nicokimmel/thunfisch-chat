@@ -181,7 +181,7 @@ function setupTooltips() {
 }
 
 function setupHighlight() {
-    /*showdown.extension("codehighlight", function () {
+    showdown.extension("codehighlight", function () {
         function htmlunencode(text) {
             return (
                 text
@@ -194,33 +194,6 @@ function setupHighlight() {
             {
                 type: "output",
                 filter: function (text, converter, options) {
-                    var left = "<pre><code\\b[^>]*>",
-                        right = "</code></pre>",
-                        flags = "g",
-                        replacement = function (wholeMatch, match, left, right) {
-                            match = htmlunencode(match)
-                            return left + hljs.highlightAuto(match).value + right
-                        }
-                    return showdown.helper.replaceRecursiveRegExp(text, replacement, left, right, flags)
-                }
-            }
-        ]
-    })*/
-
-    showdown.extension("codehighlight", function () {
-        function htmlunencode(text) {
-            return (
-                text
-                    .replace(/&amp;/g, "&")
-                    .replace(/</g, "<")
-                    .replace(/>/g, ">")
-            );
-        }
-        return [
-            {
-                type: "output",
-                filter: function (text, converter, options) {
-                    // Suche nach <code> Blöcken mit einer "language-*" Klasse
                     var left = "<pre><code\\b[^>]*class=\"[^\"]*language-([^\"]*)[^\"]*\">",
                         right = "</code></pre>",
                         flags = "g",
@@ -228,47 +201,19 @@ function setupHighlight() {
                             var matchStart = wholeMatch.indexOf(match),
                                 tagLeft = wholeMatch.substring(0, matchStart),
                                 tagRight = wholeMatch.substring(matchStart + match.length),
-                                languageClassMatchResult = tagLeft.match(/class=\"[^\"]*language-([^\"]*)[^\"]*\"/);
+                                languageClassMatchResult = tagLeft.match(/class=\"[^\"]*language-([^\"]*)[^\"]*\"/)
+                            var language = languageClassMatchResult ? languageClassMatchResult[1] : "plaintext"
+                            match = htmlunencode(match)
+                            var highlighted = hljs.highlightAuto(match, [language]).value
 
-                            // Extrahiere die Klasse, die auf "language-" folgt, um die Sprache zu identifizieren
-                            var language = languageClassMatchResult ? languageClassMatchResult[1] : "plaintext";
-
-                            // Entschlüsselung der HTML-Entities im match
-                            match = htmlunencode(match);
-
-                            // Hervorhebung unter der Annahme der identifizierten Sprache
-                            var highlighted = hljs.highlightAuto(match, [language]).value;
-
-                            return left + highlighted + right;
-                        };
-
-                    // ersetze rekursiv und wende Highlighting nur auf die passenden <code> Blöcke an
-                    return showdown.helper.replaceRecursiveRegExp(text, replacement, left, right, flags);
+                            return left + highlighted + right
+                        }
+                    return showdown.helper.replaceRecursiveRegExp(text, replacement, left, right, flags)
                 }
             }
-        ];
+        ]
     })
 
-}
-
-function setupDropzone() {
-    Dropzone.autoDiscover = false
-    var dropzone = new Dropzone("#chat-input", {
-        url: "/upload",
-        paramName: "file",
-        clickable: false,
-        previewsContainer: false,
-        acceptedFiles: ".doc,.docx,.dot,.pdf,.csv,.txt,.xls,.xlsx",
-        maxFilesize: 1,
-        init: function () {
-            this.on("sending", function (file, xhr, data) {
-                data.append("secret", chatSettings.secret)
-            })
-            this.on("success", function (file, content) {
-                addAttachedFile(file.name, content)
-            })
-        }
-    })
 }
 
 document.getElementById("secret").addEventListener("keyup", function () {
@@ -313,10 +258,59 @@ document.getElementById("model-selection").addEventListener("change", function (
     setModel(this.value)
 })
 
+document.getElementById("chat-file-upload").addEventListener("click", function () {
+    document.getElementById("chat-file-upload-input").click()
+})
+
+document.getElementById("chat-file-upload-input").addEventListener("change", function (event) {
+    var files = event.target.files
+
+    for (let file of files) {
+        const extension = file.name.toLowerCase().substring(file.name.lastIndexOf(".") + 1)
+        switch (extension) {
+            case "doc":
+            case "docx":
+            case "xls":
+            case "xlsx":
+            case "ppt":
+            case "pptx":
+            case "pdf":
+            case "hwp":
+                const docToText = new DocToText()
+                docToText.extractToText(file, extension)
+                    .then(function (text) {
+                        console.log(text)
+                        addAttachedFile(file.name, text)
+                    }).catch(function (error) {
+                        console.error(error)
+                    })
+                break
+            case "txt":
+            case "csv":
+            case "json":
+            case "yaml":
+            case "xml":
+            case "html":
+            case "htm":
+            case "md":
+                const reader = new FileReader()
+                reader.onload = function (event) {
+                    console.log(event.target.result)
+                    addAttachedFile(file.name, event.target.result)
+                }
+                reader.readAsText(file)
+                break
+            default:
+                break
+        }
+    }
+})
+
 resizeTextarea()
 
 setupHighlight()
-setupDropzone()
 setupTooltips()
 
 const markdown = new showdown.Converter({ extensions: ["codehighlight"] })
+
+fetch("http://google.com").then((response) => { console.log(response) })

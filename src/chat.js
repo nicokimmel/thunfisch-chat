@@ -16,15 +16,6 @@ CLIENT_DEPENDENCIES.forEach((lib) => {
 
 const { OpenAIWrapper } = require("./openai")
 
-const { WhitelistWrapper } = require("./whitelist")
-const whitelist = new WhitelistWrapper()
-
-const { UploadWrapper } = require("./upload")
-const upload = new UploadWrapper(whitelist)
-
-const { SearchWrapper } = require("./search")
-const search = new SearchWrapper()
-
 app.get("/favicon.ico", (req, res) => {
 	res.sendFile(path.join(__dirname, "public", "img", "tuna_chat.ico"))
 })
@@ -42,48 +33,7 @@ app.post("/chat", (req, res) => {
 	openai.chat(res, model, messages)
 })
 
-app.post("/upload", upload.singleFile(), function (req, res, next) {
-	if (!req.file) {
-		res.status(400)
-		res.send("No file uploaded.")
-		return
-	}
-
-	upload.extractText(req.file.path, (text) => {
-		res.status(200)
-		res.send(text)
-		upload.removeFile(req.file.path)
-	})
-})
-
-app.post("/search", (req, res) => {
-	let secret = req.body.secret
-
-	if (!whitelist.isWhitelisted(secret)) {
-		res.status(403)
-		res.send(`Die Anfrage konnte nicht verarbeitet werden.  
-		\`You are not whitelisted.\``)
-		return
-	}
-
-	res.status(501)
-	res.send("Not implemented yet.")
-	return
-
-	if (!req.body.query || req.body.query.length < 3) {
-		res.status(400)
-		res.send("Bad query request. Queries must be at least 3 characters long.")
-	}
-
-	let query = req.body.query
-	search.google(query, (result) => {
-		res.status(200)
-		res.send(JSON.stringify(result))
-	})
-})
-
 http.listen(process.env.PORT, () => {
-	upload.createFolderIfNotExists()
 	whitelist.createFileIfNotExists()
 	whitelist.loadFile()
 	console.log(`Server läuft auf *${process.env.PORT}`)

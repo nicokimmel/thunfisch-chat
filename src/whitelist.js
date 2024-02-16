@@ -1,6 +1,6 @@
 const fs = require("fs")
 
-class WhitelistWrapper {
+class Whitelist {
 
     constructor() {
         this.whitelistFile = "./whitelist.json"
@@ -22,4 +22,4 @@ class WhitelistWrapper {
     }
 }
 
-module.exports = { WhitelistWrapper }
+module.exports = { Whitelist }
