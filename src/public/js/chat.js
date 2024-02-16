@@ -22,7 +22,7 @@ function sendPrompt(prompt) {
     chatHistory[tab].messages.push({ role: "user", content: prompt })
 
     if (chatHistory[tab].title === "Unbenannt") {
-        chatCompletion(
+        chatCompletion("gpt-3.5-turbo",
             [{
                 role: "user",
                 content: "Schreibe eine simple Zusammenfassung mit maximal 5 Wörtern für die unten stehende Anfrage. Antworte nur mit der Zusammenfassung und bearbeite nicht die Anfrage selbst.\n\n" + prompt
@@ -41,7 +41,7 @@ function sendPrompt(prompt) {
     scrollMessageList()
 
     let context = getContext()
-    chatCompletion(context,
+    chatCompletion(chatSettings.model, context,
         (response) => {
             setAssistantMessage(assistantElement, response)
             scrollMessageList()

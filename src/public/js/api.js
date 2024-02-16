@@ -1,11 +1,11 @@
-function chatCompletion(messages, onStream, onComplete) {
+function chatCompletion(model, messages, onStream, onComplete) {
     let request = new XMLHttpRequest()
 
     request.open("POST", "/chat", true)
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
     request.send(JSON.stringify({
         "secret": chatSettings.secret,
-        "model": chatSettings.model,
+        "model": model,
         "messages": messages
     }))
 
