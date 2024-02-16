@@ -1,0 +1,3 @@
+[submodule "src/public/js/libs/docsToText"]
+	path = src/public/js/libs/docsToText
+	url = https://github.com/bshopcho/docsToText.git
