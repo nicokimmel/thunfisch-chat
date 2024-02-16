@@ -34,7 +34,5 @@ app.post("/chat", (req, res) => {
 })
 
 http.listen(process.env.PORT, () => {
-	whitelist.createFileIfNotExists()
-	whitelist.loadFile()
 	console.log(`Server läuft auf *${process.env.PORT}`)
 })
