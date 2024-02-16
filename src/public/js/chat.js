@@ -312,5 +312,3 @@ setupHighlight()
 setupTooltips()
 
 const markdown = new showdown.Converter({ extensions: ["codehighlight"] })
-
-fetch("http://google.com").then((response) => { console.log(response) })
