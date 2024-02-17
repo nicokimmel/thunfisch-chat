@@ -1,7 +1,8 @@
 html,
 body {
-    height: 100vh;
-    max-height: 100vh;
+    min-height: 100vh;
+    padding: 0;
+    margin: 0;
 }
 
 textarea:focus,
@@ -60,18 +61,6 @@ img {
     min-width: 300px;
     max-width: 300px;
     overflow-y: auto;
-}
-
-@media screen and (max-width: 992px) {
-    #chat-left {
-        width: 100%;
-        min-width: 100%;
-        max-width: 100%;
-        overflow-y: visible;
-    }
-    #chat-right {
-        width: 100%;
-    }
 }
 
 #chat-input {

@@ -238,7 +238,7 @@ document.getElementById("chat-input").addEventListener("keypress", function (eve
     }
 })
 
-document.getElementById("chat-input").addEventListener("keyup", function (event) {
+document.getElementById("chat-input").addEventListener("input", function (event) {
     resizeTextarea()
 })
 

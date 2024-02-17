@@ -1,0 +1,24 @@
+@media screen and (max-width: 992px) {
+    body {
+        padding: 15px 0 15px 0;
+    }
+
+    #chat-left {
+        width: 100%;
+        min-width: 100%;
+        max-width: 100%;
+        overflow-y: visible;
+    }
+
+    #chat-right {
+        width: 100%;
+    }
+
+    #message-list {
+        padding: 0;
+    }
+
+    pre {
+        width: 65vw;
+    }
+}

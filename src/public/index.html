@@ -14,13 +14,14 @@
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/highlightjs/styles/tomorrow-night-blue.css">
-    <link rel="stylesheet" href="css/chat.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
 </head>
 
 <body class="d-flex flex-column">
 
     <!-- HEADER -->
-    <div id="header" class="d-flex flex-row align-items-center p-2 fs-4">
+    <div id="header" class="d-flex flex-row align-items-center p-3 fs-4">
         <button id="chat-menu" type="button" class="btn fs-4"><i class="bi bi-list"></i></button>
         <span>Thunfisch <span class="badge bg-primary">CHAT</span></span>
         <span class="flex-fill"></span>
@@ -30,7 +31,7 @@
     </div>
 
     <!-- MAIN -->
-    <div id="chat" class="flex-grow-1 d-flex flex-column flex-lg-row gap-3 p-2 px-4 pb-4">
+    <div id="chat" class="flex-grow-1 d-flex flex-column flex-lg-row gap-3 p-2 px-2 px-lg-4">
 
         <!-- MENU -->
         <div id="chat-left" class="d-flex flex-column gap-3">
@@ -107,10 +108,10 @@
         <div id="chat-right" class="flex-grow-1 d-flex flex-column rounded p-3 bg-body-tertiary">
 
             <!-- MESSAGES -->
-            <div id="message-list" class="container mb-4 overflow-auto"></div>
+            <div id="message-list" class="container-lg mb-4 overflow-auto"></div>
 
             <!-- INPUT -->
-            <div class="container mt-auto d-flex flex-column form-control p-3 gap-2">
+            <div class="container-lg mt-auto d-flex flex-column form-control p-3 gap-2">
                 <textarea id="chat-input" class="border border-0 bg-transparent" placeholder="Nachricht"></textarea>
                 <div class="d-flex flex-row gap-2">
                     <button id="chat-file-upload" class="btn btn-secondary btn-sm" type="button"><i
