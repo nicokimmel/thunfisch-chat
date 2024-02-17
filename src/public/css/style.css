@@ -1,8 +1,6 @@
 html,
 body {
     min-height: 100vh;
-    padding: 0;
-    margin: 0;
 }
 
 textarea:focus,
@@ -60,7 +58,6 @@ img {
     width: 300px;
     min-width: 300px;
     max-width: 300px;
-    overflow-y: auto;
 }
 
 #chat-input {
