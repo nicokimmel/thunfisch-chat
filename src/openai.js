@@ -21,7 +21,9 @@ class OpenAIWrapper {
                         type: "function",
                         function: {
                             name: "image",
-                            function: async function image(prompt) { return await self.image(prompt) },
+                            function: async function image(prompt) {
+                                return await self.image(prompt)
+                            },
                             description: "Create an image with the help of DALL-E. Do not use it unless the user uses words like \"create image\" or \"DALL-E\".",
                             parameters: {
                                 type: "object",
@@ -41,12 +43,14 @@ class OpenAIWrapper {
                                 },
                                 required: ["prompt"]
                             }
-                        },
+                        }
+                    },
+                    {
+                        type: "function",
                         function: {
                             name: "browse",
                             function: async function browse(url) {
                                 let parameters = JSON.parse(url)
-                                console.log(parameters.url)
                                 let browser = new Browser("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.3")
                                 return await browser.browse(parameters.url)
                             },
