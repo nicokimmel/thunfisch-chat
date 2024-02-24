@@ -1,8 +1,4 @@
 @media screen and (max-width: 992px) {
-    body {
-        padding: 15px 0 15px 0;
-    }
-
     #chat-left {
         width: 100%;
         min-width: 100%;
