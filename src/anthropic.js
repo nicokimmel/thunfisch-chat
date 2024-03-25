@@ -1,6 +1,6 @@
 const { Anthropic } = require("@anthropic-ai/sdk")
 
-class AnthropicsWrapper {
+class AnthropicWrapper {
 
     constructor(secret) {
         this.anthropic = new Anthropic({
@@ -38,4 +38,4 @@ class AnthropicsWrapper {
     }
 }
 
-module.exports = { AnthropicsWrapper }
+module.exports = { AnthropicWrapper }
