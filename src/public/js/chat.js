@@ -22,7 +22,8 @@ function sendPrompt(prompt) {
     chatHistory[tab].messages.push({ role: "user", content: prompt })
 
     if (chatHistory[tab].title === "Unbenannt") {
-        chatCompletion("gpt-3.5-turbo",
+        let model = chatSettings.secret.startsWith("sk-ant-") ? "claude-3-haiku-20240307" : "gpt-3.5-turbo"
+        chatCompletion(model,
             [{
                 role: "user",
                 content: "Schreibe eine simple Zusammenfassung mit maximal 5 Wörtern für die unten stehende Anfrage. Antworte nur mit der Zusammenfassung und bearbeite nicht die Anfrage selbst.\n\n" + prompt
