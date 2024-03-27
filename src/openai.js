@@ -77,15 +77,14 @@ class OpenAIWrapper {
             })
 
             res.writeHead(200, {
-                'Content-Type': 'text/plain',
-                'Transfer-Encoding': 'chunked'
+                "Content-Type": "text/plain",
+                "Transfer-Encoding": "chunked"
             })
 
             for await (const chunk of stream) {
                 let delta = chunk.choices[0]?.delta
                 if (delta.content) {
                     res.write(delta.content)
-                    res.flush()
                 }
             }
 
