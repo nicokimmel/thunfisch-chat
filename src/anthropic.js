@@ -18,6 +18,7 @@ class AnthropicWrapper {
                 })
                 .on("text", (text) => {
                     res.write(text)
+                    res.flush()
                 })
                 .on("finalMessage", (message) => {
                     res.write(message.content[0].text)
