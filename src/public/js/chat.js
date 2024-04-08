@@ -225,6 +225,19 @@ document.getElementById("chat-theme").addEventListener("click", () => {
     toggleTheme()
 })
 
+document.getElementById("chat-save").addEventListener("click", () => {
+    let storage = {
+        settings: chatSettings,
+        history: chatHistory
+    }
+    let jsonString = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(storage))
+    let downloadElement = document.createElement("a")
+    downloadElement.setAttribute("href", jsonString)
+    downloadElement.setAttribute("download", "chatStorage.json")
+    downloadElement.click()
+    downloadElement.remove()
+})
+
 document.getElementById("chat-submit").addEventListener("click", () => {
     let prompt = document.getElementById("chat-input").value
     sendPrompt(prompt)
