@@ -20,7 +20,7 @@ class AnthropicWrapper {
                     res.write(text)
                 })
                 .on("finalMessage", (message) => {
-                    res.write(message.content[0].text)
+                    //res.write(message.content[0].text)
                     res.status(200)
                     res.end()
                 })
