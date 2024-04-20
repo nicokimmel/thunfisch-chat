@@ -122,6 +122,7 @@ function prettifyPreBlocks(messageElement) {
 
         let languageText = preTag.querySelector("code")?.className.match(/language-(\w+)/)?.[1] || "text"
         let codeLanguage = document.createElement("span")
+        codeLanguage.classList.add("no-selection")
         codeLanguage.innerHTML = languageText.toUpperCase()
 
         codeBar.appendChild(codeLanguage)

@@ -3,6 +3,13 @@ body {
     min-height: 100vh;
 }
 
+.no-selection {
+    -ms-user-select: None;
+    -moz-user-select: None;
+    -webkit-user-select: None;
+    user-select: None;
+}
+
 textarea:focus,
 textarea:active {
     outline: 0px !important;
