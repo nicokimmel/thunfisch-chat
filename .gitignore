@@ -132,3 +132,4 @@ dist
 package-lock.json
 src/uploads
 whitelist.json
+devices.json

@@ -26,7 +26,6 @@ app.get("/", (req, res) => {
 })
 
 app.post("/chat", (req, res) => {
-	let secret = req.body.secret
 	let model = req.body.model
 	let messages = req.body.messages
 

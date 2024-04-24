@@ -3,7 +3,6 @@ function chatCompletion(model, messages, onStream, onComplete) {
     request.open("POST", "/chat", true)
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
     request.send(JSON.stringify({
-        "secret": chatSettings.secret,
         "model": model,
         "messages": messages
     }))

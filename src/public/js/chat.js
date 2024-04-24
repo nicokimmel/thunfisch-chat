@@ -239,10 +239,6 @@ function setupHighlight() {
 
 }
 
-document.getElementById("secret").addEventListener("keyup", function () {
-    setSecret(this.value)
-})
-
 document.getElementById("chat-theme").addEventListener("click", () => {
     toggleTheme()
 })
