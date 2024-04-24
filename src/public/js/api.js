@@ -1,6 +1,5 @@
 function chatCompletion(model, messages, onStream, onComplete) {
     let request = new XMLHttpRequest()
-
     request.open("POST", "/chat", true)
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
     request.send(JSON.stringify({

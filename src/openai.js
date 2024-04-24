@@ -118,10 +118,10 @@ class OpenAIWrapper {
                 quality: parameters.quality,
                 response_format: "url"
             })
-
+            
             return {
                 success: true,
-                system: "Format the URL in Markdown and include it into your answer. The prompt should be the alt text in brackets. Also remind the user that the link will expire in 1 hour.",
+                system: "Format the image in Markdown and include it into your answer. The description of the image is is the prompt you used. Remind the user that the link will expire in 1 hour.",
                 url: response.data[0].url,
                 prompt: parameters.prompt
             }

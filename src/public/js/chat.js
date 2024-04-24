@@ -4,25 +4,41 @@ function sendPrompt(prompt) {
     if (prompt === "") {
         return
     }
+    
+    prompt = prompt.trim()
 
     clearTextarea()
 
-    if (Object.keys(attachedFiles).length > 0) {
-        let message = "Dateiuploads:"
-        for (let filename in attachedFiles) {
-            message += `\n\nDatei ${filename}:\n`
-            message += `\`\`\`\n${attachedFiles[filename]}\n\`\`\``
-        }
-        addSystemMessage(getFilenamesFromMessage(message))
-        chatHistory[tab].messages.push({ role: "system", content: message })
-        clearAttachedFiles()
+    if (attachedFiles.length > 0) {
+        let systemMessage = "Dateiuploads:"
+        attachedFiles.forEach((file) => {
+            systemMessage += `\n\nDatei ${file.name}:\n`
+            systemMessage += `\`\`\`\n${file.content}\n\`\`\``
+        })
+        addSystemMessage(getFilenamesFromMessage(systemMessage))
+        chatHistory[tab].messages.push({ role: "system", content: [{ type: "text", text: systemMessage }] })
     }
 
+    let userMessage = { role: "user", content: [] }
+
+    if (attachedImages.length > 0) {
+        let systemMessage = ""
+        attachedImages.forEach((file) => {
+            userMessage.content.push({ type: "image_url", image_url: { url: file.content } })
+            systemMessage += `<img src="${file.content}" class="img-thumbnail thumbnail-adjust">`
+        })
+        addSystemMessage(`<div class="d-flex gap-2">${systemMessage}</div>`, true)
+    }
+
+    clearAttachments()
+
     addUserMessage(prompt)
-    chatHistory[tab].messages.push({ role: "user", content: prompt })
+
+    userMessage.content.push({ type: "text", text: prompt })
+    chatHistory[tab].messages.push(userMessage)
 
     if (chatHistory[tab].title === "Unbenannt") {
-        let model = chatSettings.secret.startsWith("sk-ant-") ? "claude-3-haiku-20240307" : "gpt-3.5-turbo-0125"
+        let model = chatSettings.model.startsWith("gpt-") ? "gpt-3.5-turbo-0125" : "claude-3-haiku-20240307"
         chatCompletion(model,
             [{
                 role: "user",
@@ -48,7 +64,7 @@ function sendPrompt(prompt) {
             scrollMessageList()
         },
         (finalResponse) => {
-            chatHistory[tab].messages.push({ role: "assistant", content: finalResponse })
+            chatHistory[tab].messages.push({ role: "assistant", content: [{ type: "text", text: finalResponse }] })
             saveHistory()
             window.setTimeout(scrollMessageList, 1000)
         })
@@ -99,14 +115,19 @@ function setAssistantMessage(messageElement, message) {
     prettifyPreBlocks(messageElement)
 }
 
-function addSystemMessage(message) {
+function addSystemMessage(message, isHTML) {
+    let messageText = message
+    if (!isHTML) {
+        messageText = markdown.makeHtml(message)
+    }
+
     let systemMessage = document.createElement("div")
     systemMessage.classList.add("message-system", "d-flex", "flex-row", "p-3", "mt-3", "bg-body-secondary", "rounded")
     systemMessage.innerHTML = `
         <div class="message-left p-2 fs-3">
             <i class="bi bi-cloud-fill"></i>
         </div>
-        <div class="message-right p-2">${markdown.makeHtml(message)}</div>`
+        <div class="message-right p-2">${messageText}</div>`
     document.getElementById("message-list").appendChild(systemMessage)
     prettifyPreBlocks(systemMessage)
     return systemMessage
@@ -308,12 +329,22 @@ document.getElementById("chat-file-upload-input").addEventListener("change", fun
             case "html":
             case "htm":
             case "md":
-                const reader = new FileReader()
-                reader.onload = function (event) {
+                const fileReader = new FileReader()
+                fileReader.onload = (event) => {
                     console.log(event.target.result)
                     addAttachedFile(file.name, event.target.result)
                 }
-                reader.readAsText(file)
+                fileReader.readAsText(file)
+                break
+            case "jpg":
+            case "jpeg":
+            case "png":
+            case "gif":
+                const imageReader = new FileReader()
+                imageReader.onload = (event) => {
+                    addAttachedImage(file.name, event.target.result)
+                }
+                imageReader.readAsDataURL(file)
                 break
             default:
                 break

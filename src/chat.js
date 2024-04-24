@@ -6,7 +6,7 @@ const express = require("express")
 const app = express()
 const http = require("http").Server(app)
 
-app.use(express.json())
+app.use(express.json({ limit: "50mb" }))
 app.use(express.static(path.join(__dirname, "public")))
 
 const CLIENT_DEPENDENCIES = ["bootstrap", "bootstrap-icons", "showdown", "highlightjs", "dropzone"]
@@ -41,4 +41,19 @@ app.post("/chat", (req, res) => {
 
 http.listen(process.env.PORT, () => {
 	console.log(`Server läuft auf *${process.env.PORT}`)
+
+	testMessages = [
+		{
+			role: "user",
+			content: [
+				{ type: "text", text: "What’s in this image?" },
+				{
+					type: "image_url",
+					image_url: {
+						"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg",
+					},
+				},
+			],
+		},
+	]
 })

@@ -39,12 +39,35 @@ function loadHistory(index) {
     let messages = chatHistory[index].messages
     messages.forEach(message => {
         if (message.role === "user") {
-            addUserMessage(message.content)
+            let systemMessage = ""
+            message.content.forEach(entry => {
+                if(entry.type === "image_url") {
+                    systemMessage += `<img src="${entry.image_url.url}" class="img-thumbnail thumbnail-adjust">`
+                }
+            })
+            if(systemMessage !== "") {
+                addSystemMessage(`<div class="d-flex gap-2">${systemMessage}</div>`, true)
+            }
+            let userMessage = ""
+            message.content.forEach(entry => {
+                if(entry.type === "text") {
+                    userMessage += entry.text
+                    userMessage += "\n\n"
+                }
+            })
+            addUserMessage(userMessage.trim())
         } else if (message.role === "assistant") {
             let assistantElement = addAssistantMessage()
-            setAssistantMessage(assistantElement, message.content)
+            let assistantMessage = ""
+            message.content.forEach(entry => {
+                if(entry.type === "text") {
+                    assistantMessage += entry.text
+                    assistantMessage += "\n\n"
+                }
+            })
+            setAssistantMessage(assistantElement, assistantMessage.trim())
         } else if (message.role === "system") {
-            let filenames = getFilenamesFromMessage(message.content)
+            let filenames = getFilenamesFromMessage(message.content[0].text)
             addSystemMessage(filenames)
         }
     })
