@@ -26,34 +26,19 @@ app.get("/", (req, res) => {
 })
 
 app.post("/chat", (req, res) => {
-	let secret = req.body.secret
 	let model = req.body.model
 	let messages = req.body.messages
 
-	if (secret.startsWith("sk-ant-")) {
-		let anthropic = new AnthropicWrapper(secret)
-		anthropic.chat(res, model, messages)
-	} else {
-		let openai = new OpenAIWrapper(secret)
+	if (model.startsWith("gpt-")) {
+		let openai = new OpenAIWrapper(process.env.OPENAI_SECRET)
 		openai.chat(res, model, messages)
+
+	} else {
+		let anthropic = new AnthropicWrapper(process.env.ANTHROPIC_SECRET)
+		anthropic.chat(res, model, messages)
 	}
 })
 
 http.listen(process.env.PORT, () => {
 	console.log(`Server läuft auf *${process.env.PORT}`)
-
-	testMessages = [
-		{
-			role: "user",
-			content: [
-				{ type: "text", text: "What’s in this image?" },
-				{
-					type: "image_url",
-					image_url: {
-						"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg",
-					},
-				},
-			],
-		},
-	]
 })

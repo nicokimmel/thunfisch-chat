@@ -1,5 +1,6 @@
 const { OpenAI } = require("openai")
 const { Browser } = require("./browser")
+const { HomeAssistantWrapper } = require("./homeassistant")
 
 class OpenAIWrapper {
 
@@ -64,6 +65,71 @@ class OpenAIWrapper {
                                     }
                                 },
                                 required: ["url"]
+                            }
+                        }
+                    },
+                    {
+                        type: "function",
+                        function: {
+                            name: "getHomeDeviceList",
+                            function: async function getHomeDeviceList() {
+                                let homeassistant = new HomeAssistantWrapper()
+                                return await homeassistant.list()
+                            },
+                            description: "Serves a json object of all smart home devices. If the user asks for controling a device, you have to look up its ID from the list first.",
+                        }
+                    },
+                    {
+                        type: "function",
+                        function: {
+                            name: "setHomeDeviceState",
+                            function: async function setHomeDeviceState(parameters) {
+                                parameters = JSON.parse(parameters)
+                                let deviceId = parameters.deviceId
+                                let state = parameters.state
+                                
+                                console.log(deviceId + " set to " + state)
+                                
+                                let homeassistant = new HomeAssistantWrapper(process.env.HOMEASSISTANT_URL, process.env.HOMEASSISTANT_TOKEN)
+                                return await homeassistant.set(deviceId, state)
+                            },
+                            description: "Control a smart home device (e.g. a lamp) and set its state. Get the ID by reading through the list first.",
+                            parameters: {
+                                type: "object",
+                                properties: {
+                                    deviceId: {
+                                        type: "string",
+                                        description: "The device id from the list."
+                                    },
+                                    state: {
+                                        type: "string",
+                                        description: "The state which the user wants to set the device to. Either \"on\" or \"off\"."
+                                    }
+                                },
+                                required: ["deviceId", "state"]
+                            }
+                        }
+                    },
+                    {
+                        type: "function",
+                        function: {
+                            name: "getHomeDeviceState",
+                            function: async function getHomeDeviceState(parameters) {
+                                parameters = JSON.parse(parameters)
+                                let deviceId = parameters.deviceId                                
+                                let homeassistant = new HomeAssistantWrapper(process.env.HOMEASSISTANT_URL, process.env.HOMEASSISTANT_TOKEN)
+                                return await homeassistant.get(deviceId)
+                            },
+                            description: "Read the state of a smart home device (e.g. a lamp). Get the ID by reading through the list first.",
+                            parameters: {
+                                type: "object",
+                                properties: {
+                                    deviceId: {
+                                        type: "string",
+                                        description: "The device id from the list."
+                                    }
+                                },
+                                required: ["deviceId"]
                             }
                         }
                     }
