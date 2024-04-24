@@ -30,10 +30,11 @@ app.post("/chat", (req, res) => {
 	let messages = req.body.messages
 
 	if (model.startsWith("gpt-")) {
-		let openai = new OpenAIWrapper(secret)
+		let openai = new OpenAIWrapper(process.env.OPENAI_SECRET)
 		openai.chat(res, model, messages)
+
 	} else {
-		let anthropic = new AnthropicWrapper(secret)
+		let anthropic = new AnthropicWrapper(process.env.ANTHROPIC_SECRET)
 		anthropic.chat(res, model, messages)
 	}
 })
