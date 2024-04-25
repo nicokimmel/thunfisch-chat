@@ -48,7 +48,7 @@ class HomeAssistantWrapper {
     }
 
     async list() {
-        let rawData = fs.readFileSync("device.json")
+        let rawData = fs.readFileSync("devices.json")
         let deviceList = JSON.parse(rawData)
         this.deviceList = deviceList
         return JSON.stringify(deviceList)
