@@ -55,18 +55,15 @@ function sendPrompt(prompt) {
     }
 
     let assistantElement = addAssistantMessage()
-    scrollMessageList()
 
     let context = getContext()
     chatCompletion(chatSettings.model, context,
         (response) => {
             setAssistantMessage(assistantElement, response)
-            scrollMessageList()
         },
         (finalResponse) => {
             chatHistory[tab].messages.push({ role: "assistant", content: [{ type: "text", text: finalResponse }] })
             saveHistory()
-            window.setTimeout(scrollMessageList, 1000)
         })
 }
 
@@ -78,7 +75,7 @@ function addUserMessage(message) {
             <i class="bi bi-person-fill"></i>
         </div>
         <div class="message-right p-2">${message.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")}</div>`
-    document.getElementById("message-list").appendChild(userMessage)
+    document.getElementById("message-list").prepend(userMessage)
     return userMessage
 }
 
@@ -100,7 +97,7 @@ function addAssistantMessage() {
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>`
-    document.getElementById("message-list").appendChild(assistantMessage)
+    document.getElementById("message-list").prepend(assistantMessage)
     return assistantMessage
 }
 
@@ -128,7 +125,7 @@ function addSystemMessage(message, isHTML) {
             <i class="bi bi-cloud-fill"></i>
         </div>
         <div class="message-right p-2">${messageText}</div>`
-    document.getElementById("message-list").appendChild(systemMessage)
+    document.getElementById("message-list").prepend(systemMessage)
     prettifyPreBlocks(systemMessage)
     return systemMessage
 }
@@ -191,11 +188,6 @@ function resizeTextarea() {
     } else {
         textarea.style.height = "200px"
     }
-}
-
-function scrollMessageList() {
-    let messageList = document.getElementById("message-list")
-    messageList.scrollTo(0, messageList.scrollHeight)
 }
 
 function setupTooltips() {
@@ -275,14 +267,12 @@ document.getElementById("chat-input").addEventListener("keypress", function (eve
 })
 
 document.getElementById("chat-input").addEventListener("paste", function (event) {
-    event.preventDefault()
-
     const items = (event.clipboardData || event.originalEvent.clipboardData).items;
-
     for (const item of items) {
         if (item.type.indexOf("image") !== -1) {
             const blob = item.getAsFile()
             if (blob) {
+                event.preventDefault()
                 const fileName = "pasted_image_" + new Date().getTime() + ".png"
                 const reader = new FileReader()
                 reader.onload = function (event) {
@@ -290,8 +280,8 @@ document.getElementById("chat-input").addEventListener("paste", function (event)
                     addAttachedImage(fileName, content)
                 };
                 reader.readAsDataURL(blob)
+                return
             }
-            return
         }
     }
 })
