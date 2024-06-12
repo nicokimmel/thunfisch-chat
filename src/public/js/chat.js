@@ -267,22 +267,32 @@ document.getElementById("chat-input").addEventListener("keypress", function (eve
 })
 
 document.getElementById("chat-input").addEventListener("paste", function (event) {
-    const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+    const items = (event.clipboardData || event.originalEvent.clipboardData).items
     for (const item of items) {
         if (item.type.indexOf("image") !== -1) {
             const blob = item.getAsFile()
             if (blob) {
                 event.preventDefault()
-                const fileName = "pasted_image_" + new Date().getTime() + ".png"
+                const fileName = "image_" + new Date().getTime() + ".png"
                 const reader = new FileReader()
                 reader.onload = function (event) {
                     const content = event.target.result
                     addAttachedImage(fileName, content)
-                };
+                }
                 reader.readAsDataURL(blob)
                 return
             }
         }
+    }
+})
+
+document.getElementById("chat-input").addEventListener("drop", function (event) {
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+        event.preventDefault()
+        Array.from(files).forEach((file) => {
+            grabFileContent(file)
+        })
     }
 })
 
@@ -312,57 +322,60 @@ document.getElementById("chat-file-upload").addEventListener("click", function (
 
 document.getElementById("chat-file-upload-input").addEventListener("change", function (event) {
     var files = event.target.files
-
     for (let file of files) {
-        const extension = file.name.toLowerCase().substring(file.name.lastIndexOf(".") + 1)
-        switch (extension) {
-            case "doc":
-            case "docx":
-            case "xls":
-            case "xlsx":
-            case "ppt":
-            case "pptx":
-            case "pdf":
-            case "hwp":
-                const docToText = new DocToText()
-                docToText.extractToText(file, extension)
-                    .then(function (text) {
-                        console.log(text)
-                        addAttachedFile(file.name, text)
-                    }).catch(function (error) {
-                        console.error(error)
-                    })
-                break
-            case "txt":
-            case "csv":
-            case "json":
-            case "yaml":
-            case "xml":
-            case "html":
-            case "htm":
-            case "md":
-                const fileReader = new FileReader()
-                fileReader.onload = (event) => {
-                    console.log(event.target.result)
-                    addAttachedFile(file.name, event.target.result)
-                }
-                fileReader.readAsText(file)
-                break
-            case "jpg":
-            case "jpeg":
-            case "png":
-            case "gif":
-                const imageReader = new FileReader()
-                imageReader.onload = (event) => {
-                    addAttachedImage(file.name, event.target.result)
-                }
-                imageReader.readAsDataURL(file)
-                break
-            default:
-                break
-        }
+        grabFileContent(file)
     }
 })
+
+function grabFileContent(file) {
+    const extension = file.name.toLowerCase().substring(file.name.lastIndexOf(".") + 1)
+    switch (extension) {
+        case "doc":
+        case "docx":
+        case "xls":
+        case "xlsx":
+        case "ppt":
+        case "pptx":
+        case "pdf":
+        case "hwp":
+            const docToText = new DocToText()
+            docToText.extractToText(file, extension)
+                .then(function (text) {
+                    console.log(text)
+                    addAttachedFile(file.name, text)
+                }).catch(function (error) {
+                    console.error(error)
+                })
+            break
+        case "txt":
+        case "csv":
+        case "json":
+        case "yaml":
+        case "xml":
+        case "html":
+        case "htm":
+        case "md":
+            const fileReader = new FileReader()
+            fileReader.onload = (event) => {
+                console.log(event.target.result)
+                addAttachedFile(file.name, event.target.result)
+            }
+            fileReader.readAsText(file)
+            break
+        case "jpg":
+        case "jpeg":
+        case "png":
+        case "gif":
+            const imageReader = new FileReader()
+            imageReader.onload = (event) => {
+                addAttachedImage(file.name, event.target.result)
+            }
+            imageReader.readAsDataURL(file)
+            break
+        default:
+            break
+    }
+}
 
 resizeTextarea()
 
