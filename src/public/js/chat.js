@@ -274,15 +274,6 @@ document.getElementById("chat-input").addEventListener("keypress", function (eve
     }
 })
 
-document.getElementById("chat-input").addEventListener("paste", function (event) {
-    event.preventDefault()
-    let paste = (event.clipboardData || window.clipboardData).getData("text")
-    if (paste) {
-        this.value += paste.trim()
-        resizeTextarea()
-    }
-})
-
 document.getElementById("chat-input").addEventListener("input", function (event) {
     resizeTextarea()
 })
