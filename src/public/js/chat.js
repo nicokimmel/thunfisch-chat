@@ -4,7 +4,7 @@ function sendPrompt(prompt) {
     if (prompt === "") {
         return
     }
-    
+
     prompt = prompt.trim()
 
     clearTextarea()
@@ -271,6 +271,28 @@ document.getElementById("chat-input").addEventListener("keypress", function (eve
         let prompt = document.getElementById("chat-input").value
         sendPrompt(prompt)
         return
+    }
+})
+
+document.getElementById("chat-input").addEventListener("paste", function (event) {
+    event.preventDefault()
+
+    const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+
+    for (const item of items) {
+        if (item.type.indexOf("image") !== -1) {
+            const blob = item.getAsFile()
+            if (blob) {
+                const fileName = "pasted_image_" + new Date().getTime() + ".png"
+                const reader = new FileReader()
+                reader.onload = function (event) {
+                    const content = event.target.result
+                    addAttachedImage(fileName, content)
+                };
+                reader.readAsDataURL(blob)
+            }
+            return
+        }
     }
 })
 
