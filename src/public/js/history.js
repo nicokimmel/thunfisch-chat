@@ -75,7 +75,6 @@ function loadHistory(index) {
     chatSettings.tab = index
     saveSettings()
     restoreTabList()
-    window.setTimeout(scrollMessageList, 500)
 }
 
 function removeChat(index) {

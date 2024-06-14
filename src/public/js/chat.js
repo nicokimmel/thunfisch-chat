@@ -4,7 +4,7 @@ function sendPrompt(prompt) {
     if (prompt === "") {
         return
     }
-    
+
     prompt = prompt.trim()
 
     clearTextarea()
@@ -55,18 +55,15 @@ function sendPrompt(prompt) {
     }
 
     let assistantElement = addAssistantMessage()
-    scrollMessageList()
 
     let context = getContext()
     chatCompletion(chatSettings.model, context,
         (response) => {
             setAssistantMessage(assistantElement, response)
-            scrollMessageList()
         },
         (finalResponse) => {
             chatHistory[tab].messages.push({ role: "assistant", content: [{ type: "text", text: finalResponse }] })
             saveHistory()
-            window.setTimeout(scrollMessageList, 1000)
         })
 }
 
@@ -78,7 +75,7 @@ function addUserMessage(message) {
             <i class="bi bi-person-fill"></i>
         </div>
         <div class="message-right p-2">${message.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")}</div>`
-    document.getElementById("message-list").appendChild(userMessage)
+    document.getElementById("message-list").prepend(userMessage)
     return userMessage
 }
 
@@ -100,7 +97,7 @@ function addAssistantMessage() {
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>`
-    document.getElementById("message-list").appendChild(assistantMessage)
+    document.getElementById("message-list").prepend(assistantMessage)
     return assistantMessage
 }
 
@@ -128,7 +125,7 @@ function addSystemMessage(message, isHTML) {
             <i class="bi bi-cloud-fill"></i>
         </div>
         <div class="message-right p-2">${messageText}</div>`
-    document.getElementById("message-list").appendChild(systemMessage)
+    document.getElementById("message-list").prepend(systemMessage)
     prettifyPreBlocks(systemMessage)
     return systemMessage
 }
@@ -191,11 +188,6 @@ function resizeTextarea() {
     } else {
         textarea.style.height = "200px"
     }
-}
-
-function scrollMessageList() {
-    let messageList = document.getElementById("message-list")
-    messageList.scrollTo(0, messageList.scrollHeight)
 }
 
 function setupTooltips() {
@@ -271,11 +263,32 @@ document.getElementById("chat-input").addEventListener("keypress", function (eve
 })
 
 document.getElementById("chat-input").addEventListener("paste", function (event) {
-    event.preventDefault()
-    let paste = (event.clipboardData || window.clipboardData).getData("text")
-    if (paste) {
-        this.value += paste.trim()
-        resizeTextarea()
+    const items = (event.clipboardData || event.originalEvent.clipboardData).items
+    for (const item of items) {
+        if (item.type.indexOf("image") !== -1) {
+            const blob = item.getAsFile()
+            if (blob) {
+                event.preventDefault()
+                const fileName = "image_" + new Date().getTime() + ".png"
+                const reader = new FileReader()
+                reader.onload = function (event) {
+                    const content = event.target.result
+                    addAttachedImage(fileName, content)
+                }
+                reader.readAsDataURL(blob)
+                return
+            }
+        }
+    }
+})
+
+document.getElementById("chat-input").addEventListener("drop", function (event) {
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+        event.preventDefault()
+        Array.from(files).forEach((file) => {
+            grabFileContent(file)
+        })
     }
 })
 
@@ -305,57 +318,60 @@ document.getElementById("chat-file-upload").addEventListener("click", function (
 
 document.getElementById("chat-file-upload-input").addEventListener("change", function (event) {
     var files = event.target.files
-
     for (let file of files) {
-        const extension = file.name.toLowerCase().substring(file.name.lastIndexOf(".") + 1)
-        switch (extension) {
-            case "doc":
-            case "docx":
-            case "xls":
-            case "xlsx":
-            case "ppt":
-            case "pptx":
-            case "pdf":
-            case "hwp":
-                const docToText = new DocToText()
-                docToText.extractToText(file, extension)
-                    .then(function (text) {
-                        console.log(text)
-                        addAttachedFile(file.name, text)
-                    }).catch(function (error) {
-                        console.error(error)
-                    })
-                break
-            case "txt":
-            case "csv":
-            case "json":
-            case "yaml":
-            case "xml":
-            case "html":
-            case "htm":
-            case "md":
-                const fileReader = new FileReader()
-                fileReader.onload = (event) => {
-                    console.log(event.target.result)
-                    addAttachedFile(file.name, event.target.result)
-                }
-                fileReader.readAsText(file)
-                break
-            case "jpg":
-            case "jpeg":
-            case "png":
-            case "gif":
-                const imageReader = new FileReader()
-                imageReader.onload = (event) => {
-                    addAttachedImage(file.name, event.target.result)
-                }
-                imageReader.readAsDataURL(file)
-                break
-            default:
-                break
-        }
+        grabFileContent(file)
     }
 })
+
+function grabFileContent(file) {
+    const extension = file.name.toLowerCase().substring(file.name.lastIndexOf(".") + 1)
+    switch (extension) {
+        case "doc":
+        case "docx":
+        case "xls":
+        case "xlsx":
+        case "ppt":
+        case "pptx":
+        case "pdf":
+        case "hwp":
+            const docToText = new DocToText()
+            docToText.extractToText(file, extension)
+                .then(function (text) {
+                    console.log(text)
+                    addAttachedFile(file.name, text)
+                }).catch(function (error) {
+                    console.error(error)
+                })
+            break
+        case "txt":
+        case "csv":
+        case "json":
+        case "yaml":
+        case "xml":
+        case "html":
+        case "htm":
+        case "md":
+            const fileReader = new FileReader()
+            fileReader.onload = (event) => {
+                console.log(event.target.result)
+                addAttachedFile(file.name, event.target.result)
+            }
+            fileReader.readAsText(file)
+            break
+        case "jpg":
+        case "jpeg":
+        case "png":
+        case "gif":
+            const imageReader = new FileReader()
+            imageReader.onload = (event) => {
+                addAttachedImage(file.name, event.target.result)
+            }
+            imageReader.readAsDataURL(file)
+            break
+        default:
+            break
+    }
+}
 
 resizeTextarea()
 
