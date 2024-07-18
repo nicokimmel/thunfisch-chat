@@ -15,7 +15,6 @@ CLIENT_DEPENDENCIES.forEach((lib) => {
 })
 
 const { OpenAIWrapper } = require("./openai")
-const { AnthropicWrapper } = require("./anthropic")
 
 app.get("/favicon.ico", (req, res) => {
 	res.sendFile(path.join(__dirname, "public", "img", "tuna_chat.ico"))
@@ -30,13 +29,8 @@ app.post("/chat", (req, res) => {
 	let model = req.body.model
 	let messages = req.body.messages
 
-	if (model.startsWith("gpt-")) {
-		let openai = new OpenAIWrapper(secret)
-		openai.chat(res, model, messages)
-	} else {
-		let anthropic = new AnthropicWrapper(secret)
-		anthropic.chat(res, model, messages)
-	}
+	let openai = new OpenAIWrapper(secret)
+	openai.chat(res, model, messages)
 })
 
 http.listen(process.env.PORT, () => {
