@@ -12,83 +12,92 @@ class OpenAIWrapper {
     async chat(res, model, messages) {
         let self = this
         try {
-            const stream = await this.openai.beta.chat.completions.runTools({
-                stream: true,
-                model: model,
-                messages: messages,
-                tools: [
-                    {
-                        type: "function",
-                        function: {
-                            name: "image",
-                            function: async function image(prompt) {
-                                return await self.image(prompt)
-                            },
-                            description: "Create an image with the help of DALL-E. Do not use it unless the user uses words like \"create image\" or \"DALL-E\".",
-                            parameters: {
-                                type: "object",
-                                properties: {
-                                    prompt: {
-                                        type: "string",
-                                        description: "The prompt which DALL-E uses to generate the image."
-                                    },
-                                    size: {
-                                        type: "string",
-                                        description: "The size of the generated images. Must be one of \"1024x1024\", \"1792x1024\", or \"1024x1792\". Defaults to \"1024x1024\". If the user refers to a widescreen or wallpaper image, the \"1792x1024\" size should be used."
-                                    },
-                                    quality: {
-                                        type: "string",
-                                        description: "The quality of the image that will be generated. Must be either \"standard\" or \"hd\". Defaults to \"standard\". Do not use \"hd\" unless the user says they want a high-resolution image."
-                                    }
+            if(model.startsWith("o1-")) {
+                const completion = await this.openai.chat.completions.create({
+                    model: model,
+                    messages: messages
+                })
+                
+                res.send(completion.choices[0].message.content)
+            } else {
+                const stream = await this.openai.beta.chat.completions.runTools({
+                    stream: true,
+                    model: model,
+                    messages: messages,
+                    tools: [
+                        {
+                            type: "function",
+                            function: {
+                                name: "image",
+                                function: async function image(prompt) {
+                                    return await self.image(prompt)
                                 },
-                                required: ["prompt"]
+                                description: "Create an image with the help of DALL-E. Do not use it unless the user uses words like \"create image\" or \"DALL-E\".",
+                                parameters: {
+                                    type: "object",
+                                    properties: {
+                                        prompt: {
+                                            type: "string",
+                                            description: "The prompt which DALL-E uses to generate the image."
+                                        },
+                                        size: {
+                                            type: "string",
+                                            description: "The size of the generated images. Must be one of \"1024x1024\", \"1792x1024\", or \"1024x1792\". Defaults to \"1024x1024\". If the user refers to a widescreen or wallpaper image, the \"1792x1024\" size should be used."
+                                        },
+                                        quality: {
+                                            type: "string",
+                                            description: "The quality of the image that will be generated. Must be either \"standard\" or \"hd\". Defaults to \"standard\". Do not use \"hd\" unless the user says they want a high-resolution image."
+                                        }
+                                    },
+                                    required: ["prompt"]
+                                }
+                            }
+                        },
+                        {
+                            type: "function",
+                            function: {
+                                name: "browse",
+                                function: async function browse(url) {
+                                    let parameters = JSON.parse(url)
+                                    let browser = new Browser("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.3")
+                                    return await browser.browse(parameters.url)
+                                },
+                                description: "Browses the internet and returns the HTML content of the page. Do not use it unless the user uses words like \"browse\". You can also use it to google if the user uses the phrase \"google for me\".",
+                                parameters: {
+                                    type: "object",
+                                    properties: {
+                                        url: {
+                                            type: "string",
+                                            description: "The url which should be browsed."
+                                        }
+                                    },
+                                    required: ["url"]
+                                }
                             }
                         }
-                    },
-                    {
-                        type: "function",
-                        function: {
-                            name: "browse",
-                            function: async function browse(url) {
-                                let parameters = JSON.parse(url)
-                                let browser = new Browser("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.3")
-                                return await browser.browse(parameters.url)
-                            },
-                            description: "Browses the internet and returns the HTML content of the page. Do not use it unless the user uses words like \"browse\". You can also use it to google if the user uses the phrase \"google for me\".",
-                            parameters: {
-                                type: "object",
-                                properties: {
-                                    url: {
-                                        type: "string",
-                                        description: "The url which should be browsed."
-                                    }
-                                },
-                                required: ["url"]
-                            }
-                        }
+                    ]
+                })
+                
+                stream.on("error", (error) => {
+                    res.write(`Die Anfrage konnte nicht verarbeitet werden.  
+                        \`${error.message}\``)
+                    res.end()
+                })
+    
+                res.writeHead(200, {
+                    "Content-Type": "text/plain",
+                    "Transfer-Encoding": "chunked"
+                })
+    
+                for await (const chunk of stream) {
+                    let delta = chunk.choices[0]?.delta
+                    if (delta.content) {
+                        res.write(delta.content)
                     }
-                ]
-            })
-
-            stream.on("error", (error) => {
-                res.write(`Die Anfrage konnte nicht verarbeitet werden.  
-                    \`${error.message}\``)
-                res.end()
-            })
-
-            res.writeHead(200, {
-                "Content-Type": "text/plain",
-                "Transfer-Encoding": "chunked"
-            })
-
-            for await (const chunk of stream) {
-                let delta = chunk.choices[0]?.delta
-                if (delta.content) {
-                    res.write(delta.content)
                 }
+                
+                res.end()
             }
-
-            res.end()
 
         } catch (error) {
             res.write(`Die Anfrage konnte nicht verarbeitet werden.  
