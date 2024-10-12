@@ -8,6 +8,8 @@ services:
       OPENAI_SECRET: "sk-xxxxxxxxxxxxxxxxxxxxx"
       HOMEASSISTANT_URL: "http://127.0.0.1:8123"
       HOMEASSISTANT_TOKEN: "xxxxxxxxxxxxxxxxxxxxx"
+    volumes:
+      - /opt/docker/chat/devices.json:/chat/devices.json:ro
     ports:
       - "3000:3000/tcp"
     tty: true
