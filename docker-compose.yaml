@@ -1,0 +1,13 @@
+services:
+  chat:
+    image: thunfischchat:homeassistant
+    container_name: "chat"
+    restart: "unless-stopped"
+    environment:
+      PORT: 3000
+      OPENAI_SECRET: "sk-xxxxxxxxxxxxxxxxxxxxx"
+      HOMEASSISTANT_URL: "http://127.0.0.1:8123"
+      HOMEASSISTANT_TOKEN: "xxxxxxxxxxxxxxxxxxxxx"
+    ports:
+      - "3000:3000/tcp"
+    tty: true
