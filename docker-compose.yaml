@@ -1,6 +1,6 @@
 services:
   chat:
-    image: thunfischchat
+    image: thunfischchat:latest
     container_name: "chat"
     restart: "unless-stopped"
     environment:
