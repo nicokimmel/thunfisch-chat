@@ -13,7 +13,7 @@ class OpenAIWrapper {
     async chat(res, model, messages) {
         let self = this
         try {
-            if(model.startsWith("o1-")) {
+            if(model.startsWith("o1-") || model.startsWith("chatgpt-")) {
                 const completion = await this.openai.chat.completions.create({
                     model: model,
                     messages: messages
