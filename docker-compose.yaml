@@ -1,6 +1,7 @@
 services:
   chat:
     image: thunfischchat:homeassistant
+    build: .
     container_name: "chat"
     restart: "unless-stopped"
     environment:
@@ -13,3 +14,4 @@ services:
     ports:
       - "3000:3000/tcp"
     tty: true
+    stdin_open: true
