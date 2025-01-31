@@ -100,9 +100,11 @@ class OpenAIWrapper {
             }
 
         } catch (error) {
-            res.write(`Die Anfrage konnte nicht verarbeitet werden.  
-                \`${error.message}\``)
-            res.end()
+            if(!res.writableEnded) {
+                res.write(`Die Anfrage konnte nicht verarbeitet werden.  
+                    \`${error.message}\``)
+                res.end()
+            }
         }
     }
 
