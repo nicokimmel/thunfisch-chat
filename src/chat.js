@@ -1,5 +1,7 @@
 require("dotenv").config()
 
+const PORT = process.env.PORT || 3000
+
 const path = require("path")
 
 const express = require("express")
@@ -33,6 +35,6 @@ app.post("/chat", (req, res) => {
 	openai.chat(res, model, messages)
 })
 
-http.listen(process.env.PORT, () => {
-	console.log(`Server läuft auf *${process.env.PORT}`)
+http.listen(PORT, () => {
+	console.log(`Server läuft auf *${PORT}`)
 })
