@@ -38,7 +38,7 @@ function sendPrompt(prompt) {
     chatHistory[tab].messages.push(userMessage)
 
     if (chatHistory[tab].title === "Unbenannt") {
-        let model = "gpt-4o-mini-2024-07-18"
+        let model = chatSettings.secret.startsWith("sk-ant-") ? "claude-3-haiku-20240307" : "gpt-4o-mini-2024-07-18"
         chatCompletion(model,
             [{
                 role: "user",
